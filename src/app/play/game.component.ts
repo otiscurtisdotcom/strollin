@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
-import { InformationService } from './information/information.service';
+import { Component, ElementRef, HostListener, Input, OnChanges, OnInit } from '@angular/core';
+import { GameService } from './game.service';
 
 enum KEYS {
   "w" = "UP",
@@ -22,7 +22,7 @@ interface Coords {
   selector: 'game',
   template: '',
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnChanges {
   public app = new PIXI.Application({
     height: canvasHeight,
     width: canvasWidth,
@@ -32,24 +32,29 @@ export class GameComponent implements OnInit {
 
   //CREATE CONTENT
   private sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawRect(0, 0, tileSize, tileSize);
-  private spritePosition: Coords = { x: 0, y: 0 };
-  private spriteNewPosition: Coords = { x: 0, y: 0 };
+  private spritePosition: Coords;
+  private spriteNewPosition: Coords;
   
   private animating = false;
 
-  private liveScore = 0;
-  private liveMovesLeft = this.informationService.startingMoves;
+  @Input() isPlaying: boolean;
 
   constructor(
     private readonly elementRef: ElementRef,
-    private readonly informationService: InformationService,
+    private readonly gameService: GameService,
   ) {}
 
   ngOnInit() {
-    this.playGame();
+    this.setupGame();
   }
 
-  playGame() {
+  ngOnChanges() {
+    if (!this.isPlaying) {
+      this.resetPositions();
+    }
+  }
+
+  setupGame() {
     //CREATE APP
     this.app.view.style.height = `${canvasHeight / 2}px`;
     this.app.view.style.width = `${canvasWidth / 2}px`;
@@ -63,6 +68,12 @@ export class GameComponent implements OnInit {
 
     //ANIMATE
     this.animate();
+  }
+
+  resetPositions() {
+    this.spritePosition = { x: 0, y: 0 };
+    this.spriteNewPosition = { x: 0, y: 0 };
+    this.contentLayer.position.set(0,0);
   }
 
   animate() {
@@ -92,37 +103,38 @@ export class GameComponent implements OnInit {
 
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (!KEYS[event.key] || this.animating) return;
-
-    this.liveScore += 1;
-    this.informationService.score.next(this.liveScore);
-
-    this.liveMovesLeft -= 1;
-    this.informationService.movesLeft.next(this.liveMovesLeft);
+    if (!KEYS[event.key] || this.animating || !this.isPlaying) return;
 
     switch (KEYS[event.key]) {
       case KEYS.w:
         if (this.spritePosition.y > 0) {
           this.spriteNewPosition.y -= tileSize;
+          this.gameService.makeMove();
         }
         break;
         
       case KEYS.a:
         if (this.spritePosition.x > 0) {
           this.spriteNewPosition.x -= tileSize;
+          this.gameService.makeMove();
         }
         break;
         
       case KEYS.s:
         if (this.spritePosition.y < canvasHeight - tileSize) {
           this.spriteNewPosition.y += tileSize;
+          this.gameService.makeMove();
         }
         break;
 
       case KEYS.d:
         if (this.spritePosition.x < canvasWidth - tileSize) {
           this.spriteNewPosition.x += tileSize;
+          this.gameService.makeMove();
         }
+        break;
+
+      default:
         break;
     }
   }

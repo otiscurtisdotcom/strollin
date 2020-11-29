@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { PlayComponent } from './play.component';
 import { GameComponent } from './game.component'; 
 import { InformationComponent } from './information/information.component';
+import { PopUpComponent } from './pop-up/pop-up.component';
 
 @NgModule({
   declarations: [
     GameComponent,
     InformationComponent,
-    PlayComponent
+    PlayComponent,
+    PopUpComponent
   ],
   imports: [
     CommonModule

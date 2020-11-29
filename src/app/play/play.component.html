@@ -1,2 +1,3 @@
-<game></game>
+<game [isPlaying]="isPlaying | async"></game>
 <information></information>
+<pop-up *ngIf="!(isPlaying | async)"></pop-up>
