@@ -109,33 +109,32 @@ export class GameComponent implements OnInit, OnChanges {
       case KEYS.w:
         if (this.spritePosition.y > 0) {
           this.spriteNewPosition.y -= tileSize;
-          this.gameService.makeMove();
         }
         break;
         
       case KEYS.a:
         if (this.spritePosition.x > 0) {
           this.spriteNewPosition.x -= tileSize;
-          this.gameService.makeMove();
         }
         break;
         
       case KEYS.s:
         if (this.spritePosition.y < canvasHeight - tileSize) {
           this.spriteNewPosition.y += tileSize;
-          this.gameService.makeMove();
         }
         break;
 
       case KEYS.d:
         if (this.spritePosition.x < canvasWidth - tileSize) {
           this.spriteNewPosition.x += tileSize;
-          this.gameService.makeMove();
         }
         break;
 
       default:
         break;
     }
+
+    const isInEndZone = this.spriteNewPosition.y === canvasWidth - tileSize;
+    this.gameService.makeMove(isInEndZone);
   }
 }

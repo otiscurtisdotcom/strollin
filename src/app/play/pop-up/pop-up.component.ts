@@ -7,6 +7,9 @@ import { GameService } from '../game.service';
   styleUrls: ['./pop-up.component.scss']
 })
 export class PopUpComponent {
+  readonly title = this.gameService.title;
+  readonly copy = this.gameService.copy;
+
   constructor(
     private readonly gameService: GameService
   ) {}
