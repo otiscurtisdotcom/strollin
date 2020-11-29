@@ -10,6 +10,8 @@ enum KEYS {
 };
 
 const tileSize = 100;
+const canvasHeight = 1000;
+const canvasWidth = 1000;
 
 interface Coords {
   x: number;
@@ -22,8 +24,8 @@ interface Coords {
 })
 export class GameComponent implements OnInit {
   public app = new PIXI.Application({
-    height: 1000,
-    width: 1000,
+    height: canvasHeight,
+    width: canvasWidth,
   });
   private contentLayer = new PIXI.Container();
   private renderer = PIXI.autoDetectRenderer();
@@ -36,6 +38,7 @@ export class GameComponent implements OnInit {
   private animating = false;
 
   private liveScore = 0;
+  private liveMovesLeft = this.informationService.startingMoves;
 
   constructor(
     private readonly elementRef: ElementRef,
@@ -48,8 +51,8 @@ export class GameComponent implements OnInit {
 
   playGame() {
     //CREATE APP
-    this.app.view.style.height = '500px';
-    this.app.view.style.width = '500px';
+    this.app.view.style.height = `${canvasHeight / 2}px`;
+    this.app.view.style.width = `${canvasWidth / 2}px`;
     this.elementRef.nativeElement.appendChild(this.app.view);
 
     //ADD CONTENT TO LAYER
@@ -94,21 +97,32 @@ export class GameComponent implements OnInit {
     this.liveScore += 1;
     this.informationService.score.next(this.liveScore);
 
+    this.liveMovesLeft -= 1;
+    this.informationService.movesLeft.next(this.liveMovesLeft);
+
     switch (KEYS[event.key]) {
       case KEYS.w:
-        this.spriteNewPosition.y -= tileSize;
+        if (this.spritePosition.y > 0) {
+          this.spriteNewPosition.y -= tileSize;
+        }
         break;
         
       case KEYS.a:
-        this.spriteNewPosition.x -= tileSize;
+        if (this.spritePosition.x > 0) {
+          this.spriteNewPosition.x -= tileSize;
+        }
         break;
         
       case KEYS.s:
-        this.spriteNewPosition.y += tileSize;
+        if (this.spritePosition.y < canvasHeight - tileSize) {
+          this.spriteNewPosition.y += tileSize;
+        }
         break;
 
       case KEYS.d:
-        this.spriteNewPosition.x += tileSize;
+        if (this.spritePosition.x < canvasWidth - tileSize) {
+          this.spriteNewPosition.x += tileSize;
+        }
         break;
     }
   }

@@ -12,4 +12,5 @@ export class InformationComponent {
   ) {}
 
   currentScore = this.informationService.score;
+  movesLeft = this.informationService.movesLeft;
 }
