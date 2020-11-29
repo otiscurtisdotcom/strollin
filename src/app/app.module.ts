@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { PlayComponent } from './play/play.component';
+import { PlayModule } from './play/play.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    PlayComponent
+    HomeComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
-    AppRoutingModule
+    PlayModule
   ],
   providers: [],
   bootstrap: [AppComponent]
