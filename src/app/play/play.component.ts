@@ -10,6 +10,11 @@ enum KEYS {
 
 const tileSize = 100;
 
+interface Coords {
+  x: number;
+  y: number;
+}
+
 @Component({
   selector: 'app-play',
   templateUrl: './play.component.html',
@@ -24,7 +29,11 @@ export class PlayComponent implements OnInit {
   private renderer = PIXI.autoDetectRenderer();
 
   //CREATE CONTENT
-  private graphics = new PIXI.Graphics().beginFill(0xe74c3c).drawRect(0, 0, tileSize, tileSize);
+  private sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawRect(0, 0, tileSize, tileSize);
+  private spritePosition: Coords = { x: 0, y: 0 };
+  private spriteNewPosition: Coords = { x: 0, y: 0 };
+  
+  private animating = false;
 
   constructor(
     private elementRef: ElementRef,
@@ -41,7 +50,7 @@ export class PlayComponent implements OnInit {
     this.elementRef.nativeElement.appendChild(this.app.view);
 
     //ADD CONTENT TO LAYER
-    this.contentLayer.addChild(this.graphics);
+    this.contentLayer.addChild(this.sprite);
 
     //ADD LAYER TO STAGE
     this.app.stage.addChild(this.contentLayer);
@@ -52,29 +61,47 @@ export class PlayComponent implements OnInit {
 
   animate() {
     this.renderer.render(this.contentLayer);
+
+    const yDiff = this.spriteNewPosition.y - this.spritePosition.y;
+    const xDiff = this.spriteNewPosition.x - this.spritePosition.x;
+
+    if (this.contentLayer.position.y !== this.spriteNewPosition.y) {
+      this.contentLayer.position.y += yDiff / 10;
+      this.animating = true;
+    } else {
+      this.spritePosition.y = this.spriteNewPosition.y;
+      this.animating = false;
+    }
+
+    if (this.contentLayer.position.x !== this.spriteNewPosition.x) {
+      this.contentLayer.position.x += xDiff / 10;
+      this.animating = true;
+    } else {
+      this.spritePosition.x = this.spriteNewPosition.x;
+      this.animating = false;
+    }
+
     requestAnimationFrame(this.animate.bind(this));
   }
 
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (!KEYS[event.key]) return;
-    console.log(KEYS[event.key]);
-
+    if (!KEYS[event.key] || this.animating) return;
     switch (KEYS[event.key]) {
       case KEYS.w:
-        this.contentLayer.position.y -= tileSize;
+        this.spriteNewPosition.y -= tileSize;
         break;
         
       case KEYS.a:
-        this.contentLayer.position.x -= tileSize;
+        this.spriteNewPosition.x -= tileSize;
         break;
         
       case KEYS.s:
-        this.contentLayer.position.y += tileSize;
+        this.spriteNewPosition.y += tileSize;
         break;
 
       case KEYS.d:
-        this.contentLayer.position.x += tileSize;
+        this.spriteNewPosition.x += tileSize;
         break;
     }
   }
