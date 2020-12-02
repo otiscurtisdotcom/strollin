@@ -7,9 +7,18 @@ export enum KEYS {
     "d" = "RIGHT",
 };
 
-export const tileSize = 128;
-export const canvasHeight = 1280;
-export const canvasWidth = 1280;
+export const TILE_SIZE = 128;
+export const GRID_HEIGHT = 10;
+export const GRID_WIDTH = 10;
 
-export const startX = tileSize * 2;
-export const startY = tileSize * 9;
+export const CANVAS_HEIGHT = TILE_SIZE * GRID_HEIGHT;
+export const CANVAS_WIDTH = TILE_SIZE * GRID_WIDTH;
+
+export interface Coords {
+    xTile: number;
+    yTile: number;
+}
+
+export const START_X = 2;
+export const START_Y = GRID_HEIGHT - 1;
+

@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Injectable } from '@angular/core';
-import { canvasHeight, canvasWidth, KEYS, STARTING_MOVES, startX, startY, tileSize } from './constants';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, STARTING_MOVES, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y } from './constants';
 import { ScoresService } from './scores.service';
 
 interface RawTileMap {
@@ -24,18 +24,13 @@ enum TileId {
     Blank = 0
 }
 
-interface Coords {
-    x: number;
-    y: number;
-}
-
 @Injectable({
     providedIn: 'root'
 })
 export class PixiService {
     public readonly app = new PIXI.Application({
-        height: canvasHeight,
-        width: canvasWidth,
+        height: CANVAS_HEIGHT,
+        width: CANVAS_WIDTH,
         backgroundColor: 0x669955,
     });
 
@@ -45,9 +40,11 @@ export class PixiService {
     private readonly loader = new PIXI.Loader;
 
     //CREATE CONTENT
-    private readonly sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawRect(0, 0, tileSize, tileSize);
+    private readonly sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawRect(0, 0, TILE_SIZE, TILE_SIZE);
     private spritePosition: Coords;
-    private spriteNewPosition: Coords;
+    private spriteTempPosition: Coords;
+
+    private levelMap: number[][];
     
     private animating = false;
 
@@ -57,8 +54,8 @@ export class PixiService {
 
     setupGame() {
         //CREATE APP
-        this.app.view.style.height = `${canvasHeight / 3}px`;
-        this.app.view.style.width = `${canvasWidth / 3}px`;
+        this.app.view.style.height = `${CANVAS_HEIGHT / 3}px`;
+        this.app.view.style.width = `${CANVAS_WIDTH / 3}px`;
 
         //LOAD ASSETS
         this.loader.add([
@@ -96,6 +93,9 @@ export class PixiService {
         const array2d = Array.from({ length: rawTiles.height }).map((_, i) =>
             rawTiles.layers[0].data.slice(i * rawTiles.width, (i + 1) * rawTiles.width)
         );
+
+        this.levelMap = array2d;
+
         return array2d.map((row, i) => {
             return row.map((tileId, j) => ({
                 id: `${i}_${j}`,
@@ -111,31 +111,31 @@ export class PixiService {
     };
 
     resetPositions() {
-        this.spritePosition = { x: startX, y: startY };
-        this.spriteNewPosition = { x: startX, y: startY };
-        this.contentLayer.position.set(startX,startY);
+        this.spritePosition = { xTile:START_X, yTile:START_Y};
+        this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
+        this.contentLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
     }
 
     animate() {
         this.renderer.render(this.contentLayer);
 
-        const yDiff = this.spriteNewPosition.y - this.spritePosition.y;
-        const xDiff = this.spriteNewPosition.x - this.spritePosition.x;
+        const yDiff = this.spriteTempPosition.yTile - this.spritePosition.yTile;
+        const xDiff = this.spriteTempPosition.xTile - this.spritePosition.xTile;
 
-        if (this.contentLayer.position.y !== this.spriteNewPosition.y) {
-        this.contentLayer.position.y += yDiff / (tileSize / 8);
-        this.animating = true;
+        if (this.contentLayer.position.y !== this.spriteTempPosition.yTile * TILE_SIZE) {
+            this.contentLayer.position.y += yDiff * TILE_SIZE / 8;
+            this.animating = true;
         } else {
-        this.spritePosition.y = this.spriteNewPosition.y;
-        this.animating = false;
+            this.spritePosition.yTile = this.spriteTempPosition.yTile;
+            this.animating = false;
         }
         
-        if (this.contentLayer.position.x !== this.spriteNewPosition.x) {
-        this.contentLayer.position.x += xDiff / (tileSize / 8);
-        this.animating = true;
+        if (this.contentLayer.position.x !== this.spriteTempPosition.xTile * TILE_SIZE) {
+            this.contentLayer.position.x += xDiff * TILE_SIZE / 8;
+            this.animating = true;
         } else {
-        this.spritePosition.x = this.spriteNewPosition.x;
-        this.animating = false;
+            this.spritePosition.xTile = this.spriteTempPosition.xTile;
+            this.animating = false;
         }
 
         requestAnimationFrame(this.animate.bind(this));
@@ -147,38 +147,35 @@ export class PixiService {
             this.animating ||
             //Only allow up for first move
             (this.scoresService.liveMovesLeft === STARTING_MOVES && KEYS[event.key] !== KEYS.w) 
-        ) return;
+        ) return; 
 
         switch (KEYS[event.key]) {
         case KEYS.w:
-            if (this.spritePosition.y > 0) {
-            this.spriteNewPosition.y -= tileSize;
+            if (this.spritePosition.yTile > 0) {
+                this.spriteTempPosition.yTile -= 1;
             }
-            break;
-            
+            break;    
         case KEYS.a:
-            if (this.spritePosition.x > 0) {
-            this.spriteNewPosition.x -= tileSize;
+            if (this.spritePosition.xTile > 0) {
+                this.spriteTempPosition.xTile -= 1;
             }
             break;
-            
         case KEYS.s:
-            if (this.spritePosition.y < canvasHeight - tileSize) {
-            this.spriteNewPosition.y += tileSize;
+            if (this.spritePosition.yTile < GRID_HEIGHT - 1) {
+                this.spriteTempPosition.yTile += 1;
             }
             break;
 
         case KEYS.d:
-            if (this.spritePosition.x < canvasWidth - tileSize) {
-            this.spriteNewPosition.x += tileSize;
+            if (this.spritePosition.xTile < GRID_WIDTH - 1) {
+                this.spriteTempPosition.xTile += 1;
             }
             break;
-
         default:
             break;
         }
 
-        const isInEndZone = this.spriteNewPosition.y === canvasHeight - tileSize;
+        const isInEndZone = this.spriteTempPosition.yTile === GRID_HEIGHT - 1;
         this.scoresService.makeMove(isInEndZone);
     }
 }
