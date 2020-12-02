@@ -19,8 +19,8 @@ export class ScoresService {
   readonly title = new BehaviorSubject("Welcome");
   readonly copy = new BehaviorSubject("Time for a stroll...");
 
-  makeMove(endArea: boolean) {
-    this.liveScore += 1;
+  makeMove(points: number, endArea: boolean) {
+    this.liveScore += points;
     this.score.next(this.liveScore);
 
     this.liveMovesLeft -= 1;

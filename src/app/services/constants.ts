@@ -22,3 +22,100 @@ export interface Coords {
 export const START_X = 2;
 export const START_Y = GRID_HEIGHT - 1;
 
+interface Terrain {
+    adj_points: number;
+    passable: boolean;
+}
+
+export const TERRAIN_INFO: Terrain[] = [
+    // 0: Grass
+    {
+        adj_points: 0,
+        passable: true
+    },
+    // 1: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 2: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 3: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 4: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 5: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 6: START / END
+    {
+        adj_points: 0,
+        passable: false
+    },
+    // 7: START / END
+    {
+        adj_points: 0,
+        passable: false
+    },
+    // 8: START / END
+    {
+        adj_points: 0,
+        passable: false
+    },
+    // 9: START / END
+    {
+        adj_points: 0,
+        passable: false
+    },
+    // 10: START / END
+    {
+        adj_points: 0,
+        passable: false
+    },
+    // 11: Road
+    {
+        adj_points: -2,
+        passable: false
+    },
+    // 12: Road
+    {
+        adj_points: -2,
+        passable: false
+    },
+    // 13: Road
+    {
+        adj_points: -2,
+        passable: false
+    },
+    // 14: Road
+    {
+        adj_points: -2,
+        passable: false
+    },
+    // 15: Road
+    {
+        adj_points: -2,
+        passable: false
+    },
+    // 16: Tree 1
+    {
+        adj_points: 10,
+        passable: false
+    },
+    // 17: Tree 2
+    {
+        adj_points: 10,
+        passable: false
+    },
+]

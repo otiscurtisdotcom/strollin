@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Injectable } from '@angular/core';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, STARTING_MOVES, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y } from './constants';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, STARTING_MOVES, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y, TERRAIN_INFO } from './constants';
 import { ScoresService } from './scores.service';
 
 interface RawTileMap {
@@ -175,7 +175,48 @@ export class PixiService {
             break;
         }
 
+        let adjacentPoints = 0;
         const isInEndZone = this.spriteTempPosition.yTile === GRID_HEIGHT - 1;
-        this.scoresService.makeMove(isInEndZone);
+        adjacentPoints = isInEndZone ? 0 : this.getAdjacent(this.spriteTempPosition);
+        this.scoresService.makeMove(adjacentPoints, isInEndZone);
+    }
+
+    getAdjacent(centreTile: Coords): number {
+        let score = 0;
+        let adjacentTileIds = [];
+
+        // Clockwise from top
+        adjacentTileIds.push(
+            centreTile.yTile > 0 ? 
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile] : undefined,
+            
+            centreTile.yTile > 0 && centreTile.xTile < GRID_WIDTH ? 
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile + 1] : undefined,
+
+            centreTile.xTile < GRID_WIDTH ?
+                    this.levelMap[centreTile.yTile][centreTile.xTile + 1] : undefined,
+
+            centreTile.xTile < GRID_WIDTH ?
+                    this.levelMap[centreTile.yTile + 1][centreTile.xTile + 1] : undefined,
+
+            this.levelMap[centreTile.yTile + 1][centreTile.xTile],
+
+            centreTile.xTile > 0 ?
+                    this.levelMap[centreTile.yTile + 1][centreTile.xTile - 1] : undefined,
+
+            centreTile.xTile > 0 ?
+                    this.levelMap[centreTile.yTile][centreTile.xTile - 1] : undefined,
+
+            centreTile.xTile > 0 && centreTile.yTile > 0 ?
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile - 1] : undefined,
+        );
+
+        adjacentTileIds.forEach((id: number) => {
+            if (id !== undefined && TERRAIN_INFO[id]) {
+                score += TERRAIN_INFO[id].adj_points;
+            }
+        })
+
+        return score;
     }
 }
