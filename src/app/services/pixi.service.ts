@@ -151,26 +151,45 @@ export class PixiService {
 
         switch (KEYS[event.key]) {
         case KEYS.w:
-            if (this.spritePosition.yTile > 0) {
+            // UP
+            const upTileId = this.levelMap[this.spritePosition.yTile - 1][this.spritePosition.xTile];
+            if (this.spritePosition.yTile > 0 && TERRAIN_INFO[upTileId].passable) {
                 this.spriteTempPosition.yTile -= 1;
-            }
-            break;    
-        case KEYS.a:
-            if (this.spritePosition.xTile > 0) {
-                this.spriteTempPosition.xTile -= 1;
+            } else {
+                return;
             }
             break;
+
+        case KEYS.a:
+            // LEFT
+            const leftTileId = this.levelMap[this.spritePosition.yTile][this.spritePosition.xTile - 1];
+            if (this.spritePosition.xTile > 0 && TERRAIN_INFO[leftTileId].passable) {
+                this.spriteTempPosition.xTile -= 1;
+            } else {
+                return;
+            }
+            break;
+
         case KEYS.s:
-            if (this.spritePosition.yTile < GRID_HEIGHT - 1) {
+            // DOWN
+            const downTileId = this.levelMap[this.spritePosition.yTile + 1][this.spritePosition.xTile];
+            if (this.spritePosition.yTile < GRID_HEIGHT - 1 && TERRAIN_INFO[downTileId].passable) {
                 this.spriteTempPosition.yTile += 1;
+            } else {
+                return;
             }
             break;
 
         case KEYS.d:
-            if (this.spritePosition.xTile < GRID_WIDTH - 1) {
+            // RIGHT
+            const rightTileId = this.levelMap[this.spritePosition.yTile][this.spritePosition.xTile + 1];
+            if (this.spritePosition.xTile < GRID_WIDTH - 1 && TERRAIN_INFO[rightTileId].passable) {
                 this.spriteTempPosition.xTile += 1;
+            } else {
+                return;
             }
             break;
+
         default:
             break;
         }

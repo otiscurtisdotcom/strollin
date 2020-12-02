@@ -86,27 +86,27 @@ export const TERRAIN_INFO: Terrain[] = [
     // 11: Road
     {
         adj_points: -2,
-        passable: false
+        passable: true
     },
     // 12: Road
     {
         adj_points: -2,
-        passable: false
+        passable: true
     },
     // 13: Road
     {
         adj_points: -2,
-        passable: false
+        passable: true
     },
     // 14: Road
     {
         adj_points: -2,
-        passable: false
+        passable: true
     },
     // 15: Road
     {
         adj_points: -2,
-        passable: false
+        passable: true
     },
     // 16: Tree 1
     {
