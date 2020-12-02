@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GameService } from '../game.service';
+import { ScoresService } from '../../services/scores.service';
 
 @Component({
   selector: 'pop-up',
@@ -7,14 +7,14 @@ import { GameService } from '../game.service';
   styleUrls: ['./pop-up.component.scss']
 })
 export class PopUpComponent {
-  readonly title = this.gameService.title;
-  readonly copy = this.gameService.copy;
+  readonly title = this.scoresService.title;
+  readonly copy = this.scoresService.copy;
 
   constructor(
-    private readonly gameService: GameService
+    private readonly scoresService: ScoresService
   ) {}
 
   restart() {
-    this.gameService.restart();
+    this.scoresService.restart();
   }
 }

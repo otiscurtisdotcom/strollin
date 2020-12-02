@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GameService } from '../game.service';
+import { ScoresService } from '../../services/scores.service';
 
 @Component({
   selector: 'information',
@@ -8,9 +8,9 @@ import { GameService } from '../game.service';
 })
 export class InformationComponent {
   constructor(
-    private readonly gameService: GameService
+    private readonly scoresService: ScoresService
   ) {}
 
-  currentScore = this.gameService.score;
-  movesLeft = this.gameService.movesLeft;
+  currentScore = this.scoresService.score;
+  movesLeft = this.scoresService.movesLeft;
 }

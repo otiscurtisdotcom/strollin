@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GameService } from './game.service';
+import { ScoresService } from '../services/scores.service';
 
 @Component({
   selector: 'play',
@@ -7,13 +7,9 @@ import { GameService } from './game.service';
   styleUrls: ['./play.component.scss']
 })
 export class PlayComponent {
-  readonly isPlaying = this.gameService.isPlaying;
+  readonly isPlaying = this.scoresService.isPlaying;
 
   constructor(
-    private readonly gameService: GameService
+    private readonly scoresService: ScoresService
   ) {}
-  
-  resetPosition() {
-    console.log('test');
-  }
 }

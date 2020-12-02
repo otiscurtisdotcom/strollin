@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-
-const STARTING_MOVES = 20;
+import { STARTING_MOVES } from './constants';
 
 @Injectable({
   providedIn: 'root'
 })
-export class GameService {
+export class ScoresService {
   //SCORES
   readonly score = new BehaviorSubject(0);
   readonly movesLeft = new BehaviorSubject(STARTING_MOVES);
   private liveScore = 0;
-  private liveMovesLeft = STARTING_MOVES;
+  public liveMovesLeft = STARTING_MOVES;
 
   //PLAYING
   readonly isPlaying = new BehaviorSubject(false);
@@ -26,6 +25,9 @@ export class GameService {
 
     this.liveMovesLeft -= 1;
     this.movesLeft.next(this.liveMovesLeft);
+
+    // Ignore if first move
+    if (this.liveMovesLeft === STARTING_MOVES -1) return;
 
     if (endArea) {
       this.levelComplete();
