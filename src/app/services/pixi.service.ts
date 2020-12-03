@@ -13,15 +13,20 @@ interface RawTileMap {
 
 interface ParsedTile {
     id: string;
-    tileId: number;
+    terrainId: number;
     x: number;
     y: number;
     width: number;
     height: number;
 }
 
-enum TileId {
+enum TerrainId {
     Blank = 0
+}
+
+interface Tile {
+    terrainId: number;
+    visited: boolean;
 }
 
 @Injectable({
@@ -44,7 +49,7 @@ export class PixiService {
     private spritePosition: Coords;
     private spriteTempPosition: Coords;
 
-    private levelMap: number[][];
+    private levelMap: Tile[][];
     
     private animating = false;
 
@@ -70,7 +75,7 @@ export class PixiService {
             const level = this.loader.resources['../../assets/level1.json'].data;
             this.createLevel(level).map(tile => {
                 const sprite = new PIXI.Sprite(
-                sheet.textures![`Tileset${tile.tileId - 1}.png`]
+                sheet.textures![`Tileset${tile.terrainId - 1}.png`]
                 );
                 sprite.x = tile.x;
                 sprite.y = tile.y;
@@ -94,12 +99,17 @@ export class PixiService {
             rawTiles.layers[0].data.slice(i * rawTiles.width, (i + 1) * rawTiles.width)
         );
 
-        this.levelMap = array2d;
-
+        this.levelMap = array2d.map((row, i) => {
+            return row.map((terrainId, j) => ({
+                terrainId,
+                visited: false
+            }));
+        });
+        
         return array2d.map((row, i) => {
-            return row.map((tileId, j) => ({
+            return row.map((terrainId, j) => ({
                 id: `${i}_${j}`,
-                tileId,
+                terrainId,
                 x: rawTiles.tilewidth * j,
                 y: rawTiles.tileheight * i,
                 width: rawTiles.tilewidth,
@@ -107,13 +117,19 @@ export class PixiService {
             }));
         })
         .reduce((acc, row) => row.concat(acc), [])
-        .filter(tile => tile.tileId !== TileId.Blank);
+        .filter(tile => tile.terrainId !== TerrainId.Blank);
     };
 
     resetPositions() {
         this.spritePosition = { xTile:START_X, yTile:START_Y};
         this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
         this.contentLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
+        
+        this.levelMap?.map(row => {
+            row.map(tile => {
+                tile.visited = false;
+            });
+        });
     }
 
     animate() {
@@ -145,53 +161,56 @@ export class PixiService {
         if (
             !KEYS[event.key] ||
             this.animating ||
-            //Only allow up for first move
+            // Only allow up for first move
             (this.scoresService.liveMovesLeft === STARTING_MOVES && KEYS[event.key] !== KEYS.w) 
-        ) return; 
+        ) return;
+
+        let newTileY: number;
+        let newTileX: number;
+        let withinBounds: boolean;
 
         switch (KEYS[event.key]) {
         case KEYS.w:
             // UP
-            const upTileId = this.levelMap[this.spritePosition.yTile - 1][this.spritePosition.xTile];
-            if (this.spritePosition.yTile > 0 && TERRAIN_INFO[upTileId].passable) {
-                this.spriteTempPosition.yTile -= 1;
-            } else {
-                return;
-            }
+            newTileY = this.spritePosition.yTile - 1;
+            newTileX = this.spritePosition.xTile;
+            withinBounds = this.spritePosition.yTile > 0;
             break;
 
         case KEYS.a:
             // LEFT
-            const leftTileId = this.levelMap[this.spritePosition.yTile][this.spritePosition.xTile - 1];
-            if (this.spritePosition.xTile > 0 && TERRAIN_INFO[leftTileId].passable) {
-                this.spriteTempPosition.xTile -= 1;
-            } else {
-                return;
-            }
+            newTileY = this.spritePosition.yTile;
+            newTileX = this.spritePosition.xTile - 1;
+            withinBounds = this.spritePosition.xTile > 0;
             break;
 
         case KEYS.s:
             // DOWN
-            const downTileId = this.levelMap[this.spritePosition.yTile + 1][this.spritePosition.xTile];
-            if (this.spritePosition.yTile < GRID_HEIGHT - 1 && TERRAIN_INFO[downTileId].passable) {
-                this.spriteTempPosition.yTile += 1;
-            } else {
-                return;
-            }
+            newTileY = this.spritePosition.yTile + 1;
+            newTileX = this.spritePosition.xTile;
+            withinBounds = this.spritePosition.yTile < GRID_HEIGHT - 1;
             break;
 
         case KEYS.d:
             // RIGHT
-            const rightTileId = this.levelMap[this.spritePosition.yTile][this.spritePosition.xTile + 1];
-            if (this.spritePosition.xTile < GRID_WIDTH - 1 && TERRAIN_INFO[rightTileId].passable) {
-                this.spriteTempPosition.xTile += 1;
-            } else {
-                return;
-            }
+            newTileY = this.spritePosition.yTile;
+            newTileX = this.spritePosition.xTile + 1;
+            withinBounds = this.spritePosition.xTile < GRID_WIDTH - 1;
             break;
 
         default:
             break;
+        }
+
+        const newTile = this.levelMap[newTileY][newTileX];
+        const newTileTerrainId = newTile.terrainId;
+        const newTileCoords = { yTile: newTileY, xTile: newTileX };
+
+        if (withinBounds && TERRAIN_INFO[newTileTerrainId].passable && !newTile.visited) {
+            this.spriteTempPosition = newTileCoords;
+            this.levelMap[newTileY][newTileX].visited = true;
+        } else {
+            return;
         }
 
         let adjacentPoints = 0;
@@ -207,27 +226,27 @@ export class PixiService {
         // Clockwise from top
         adjacentTileIds.push(
             centreTile.yTile > 0 ? 
-                    this.levelMap[centreTile.yTile - 1][centreTile.xTile] : undefined,
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile].terrainId : undefined,
             
             centreTile.yTile > 0 && centreTile.xTile < GRID_WIDTH ? 
-                    this.levelMap[centreTile.yTile - 1][centreTile.xTile + 1] : undefined,
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile + 1].terrainId : undefined,
 
             centreTile.xTile < GRID_WIDTH ?
-                    this.levelMap[centreTile.yTile][centreTile.xTile + 1] : undefined,
+                    this.levelMap[centreTile.yTile][centreTile.xTile + 1].terrainId : undefined,
 
             centreTile.xTile < GRID_WIDTH ?
-                    this.levelMap[centreTile.yTile + 1][centreTile.xTile + 1] : undefined,
+                    this.levelMap[centreTile.yTile + 1][centreTile.xTile + 1].terrainId : undefined,
 
-            this.levelMap[centreTile.yTile + 1][centreTile.xTile],
-
-            centreTile.xTile > 0 ?
-                    this.levelMap[centreTile.yTile + 1][centreTile.xTile - 1] : undefined,
+            this.levelMap[centreTile.yTile + 1][centreTile.xTile].terrainId,
 
             centreTile.xTile > 0 ?
-                    this.levelMap[centreTile.yTile][centreTile.xTile - 1] : undefined,
+                    this.levelMap[centreTile.yTile + 1][centreTile.xTile - 1].terrainId : undefined,
+
+            centreTile.xTile > 0 ?
+                    this.levelMap[centreTile.yTile][centreTile.xTile - 1].terrainId : undefined,
 
             centreTile.xTile > 0 && centreTile.yTile > 0 ?
-                    this.levelMap[centreTile.yTile - 1][centreTile.xTile - 1] : undefined,
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile - 1].terrainId : undefined,
         );
 
         adjacentTileIds.forEach((id: number) => {

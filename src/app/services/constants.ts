@@ -19,6 +19,11 @@ export interface Coords {
     yTile: number;
 }
 
+export interface Tile {
+    terrainId: number;
+    visited?: boolean;
+}
+
 export const START_X = 2;
 export const START_Y = GRID_HEIGHT - 1;
 
@@ -61,27 +66,27 @@ export const TERRAIN_INFO: Terrain[] = [
     // 6: START / END
     {
         adj_points: 0,
-        passable: false
+        passable: true
     },
     // 7: START / END
     {
         adj_points: 0,
-        passable: false
+        passable: true
     },
     // 8: START / END
     {
         adj_points: 0,
-        passable: false
+        passable: true
     },
     // 9: START / END
     {
         adj_points: 0,
-        passable: false
+        passable: true
     },
     // 10: START / END
     {
         adj_points: 0,
-        passable: false
+        passable: true
     },
     // 11: Road
     {
