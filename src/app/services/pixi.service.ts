@@ -39,7 +39,8 @@ export class PixiService {
         backgroundColor: 0x669955,
     });
 
-    private readonly contentLayer = new PIXI.Container();
+    private readonly characterLayer = new PIXI.Container();
+    private readonly pathLayer = new PIXI.Container();
     private readonly backgroundLayer = new PIXI.Container();
     private readonly renderer = PIXI.autoDetectRenderer();
     private readonly loader = new PIXI.Loader;
@@ -81,80 +82,17 @@ export class PixiService {
                 sprite.y = tile.y;
                 this.backgroundLayer.addChild(sprite);
             });
-            this.app.stage.addChild(this.backgroundLayer);
-
             //ADD CONTENT TO CONTENT LAYER
-            this.contentLayer.addChild(this.sprite);
+            this.characterLayer.addChild(this.sprite);
 
-            //ADD LAYER TO STAGE
-            this.app.stage.addChild(this.contentLayer);
+            //ADD LAYERS TO STAGE
+            this.app.stage.addChild(this.backgroundLayer);
+            this.app.stage.addChild(this.pathLayer);
+            this.app.stage.addChild(this.characterLayer);
 
             //ANIMATE
             this.animate();
         });
-    }
-
-    createLevel = (rawTiles: RawTileMap): ParsedTile[] => {
-        const array2d = Array.from({ length: rawTiles.height }).map((_, i) =>
-            rawTiles.layers[0].data.slice(i * rawTiles.width, (i + 1) * rawTiles.width)
-        );
-
-        this.levelMap = array2d.map((row, i) => {
-            return row.map((terrainId, j) => ({
-                terrainId,
-                visited: false
-            }));
-        });
-        
-        return array2d.map((row, i) => {
-            return row.map((terrainId, j) => ({
-                id: `${i}_${j}`,
-                terrainId,
-                x: rawTiles.tilewidth * j,
-                y: rawTiles.tileheight * i,
-                width: rawTiles.tilewidth,
-                height: rawTiles.tileheight
-            }));
-        })
-        .reduce((acc, row) => row.concat(acc), [])
-        .filter(tile => tile.terrainId !== TerrainId.Blank);
-    };
-
-    resetPositions() {
-        this.spritePosition = { xTile:START_X, yTile:START_Y};
-        this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
-        this.contentLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
-        
-        this.levelMap?.map(row => {
-            row.map(tile => {
-                tile.visited = false;
-            });
-        });
-    }
-
-    animate() {
-        this.renderer.render(this.contentLayer);
-
-        const yDiff = this.spriteTempPosition.yTile - this.spritePosition.yTile;
-        const xDiff = this.spriteTempPosition.xTile - this.spritePosition.xTile;
-
-        if (this.contentLayer.position.y !== this.spriteTempPosition.yTile * TILE_SIZE) {
-            this.contentLayer.position.y += yDiff * TILE_SIZE / 8;
-            this.animating = true;
-        } else {
-            this.spritePosition.yTile = this.spriteTempPosition.yTile;
-            this.animating = false;
-        }
-        
-        if (this.contentLayer.position.x !== this.spriteTempPosition.xTile * TILE_SIZE) {
-            this.contentLayer.position.x += xDiff * TILE_SIZE / 8;
-            this.animating = true;
-        } else {
-            this.spritePosition.xTile = this.spriteTempPosition.xTile;
-            this.animating = false;
-        }
-
-        requestAnimationFrame(this.animate.bind(this));
     }
 
     keyPressed(event: KeyboardEvent) {
@@ -212,14 +150,90 @@ export class PixiService {
         } else {
             return;
         }
+        
+        const isInEndZone = newTileY === GRID_HEIGHT - 1;
 
+        // DRAW PATH
+        if (!isInEndZone) {
+            setTimeout(() => {
+                this.drawPath(newTileCoords);
+            }, 200);
+        }
+        
+        // POINTS
         let adjacentPoints = 0;
-        const isInEndZone = this.spriteTempPosition.yTile === GRID_HEIGHT - 1;
-        adjacentPoints = isInEndZone ? 0 : this.getAdjacent(this.spriteTempPosition);
+        adjacentPoints = isInEndZone ? 0 : this.getAdjacent(newTileCoords);
         this.scoresService.makeMove(adjacentPoints, isInEndZone);
     }
 
-    getAdjacent(centreTile: Coords): number {
+    resetPositions() {
+        this.spritePosition = { xTile:START_X, yTile:START_Y};
+        this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
+        this.characterLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
+        
+        this.levelMap?.map(row => {
+            row.map(tile => {
+                tile.visited = false;
+            });
+        });
+
+        setTimeout(() => {
+            this.pathLayer.removeChildren();
+        }, 250)
+    }
+
+    private createLevel = (rawTiles: RawTileMap): ParsedTile[] => {
+        const array2d = Array.from({ length: rawTiles.height }).map((_, i) =>
+            rawTiles.layers[0].data.slice(i * rawTiles.width, (i + 1) * rawTiles.width)
+        );
+
+        this.levelMap = array2d.map((row, i) => {
+            return row.map((terrainId, j) => ({
+                terrainId,
+                visited: false
+            }));
+        });
+        
+        return array2d.map((row, i) => {
+            return row.map((terrainId, j) => ({
+                id: `${i}_${j}`,
+                terrainId,
+                x: rawTiles.tilewidth * j,
+                y: rawTiles.tileheight * i,
+                width: rawTiles.tilewidth,
+                height: rawTiles.tileheight
+            }));
+        })
+        .reduce((acc, row) => row.concat(acc), [])
+        .filter(tile => tile.terrainId !== TerrainId.Blank);
+    }
+
+    private animate() {
+        this.renderer.render(this.characterLayer);
+
+        const yDiff = this.spriteTempPosition.yTile - this.spritePosition.yTile;
+        const xDiff = this.spriteTempPosition.xTile - this.spritePosition.xTile;
+
+        if (this.characterLayer.position.y !== this.spriteTempPosition.yTile * TILE_SIZE) {
+            this.characterLayer.position.y += yDiff * TILE_SIZE / 8;
+            this.animating = true;
+        } else {
+            this.spritePosition.yTile = this.spriteTempPosition.yTile;
+            this.animating = false;
+        }
+        
+        if (this.characterLayer.position.x !== this.spriteTempPosition.xTile * TILE_SIZE) {
+            this.characterLayer.position.x += xDiff * TILE_SIZE / 8;
+            this.animating = true;
+        } else {
+            this.spritePosition.xTile = this.spriteTempPosition.xTile;
+            this.animating = false;
+        }
+
+        requestAnimationFrame(this.animate.bind(this));
+    }
+
+    private getAdjacent(centreTile: Coords): number {
         let score = 0;
         let adjacentTileIds = [];
 
@@ -256,5 +270,12 @@ export class PixiService {
         })
 
         return score;
+    }
+
+    private drawPath(tileCoords: Coords) {
+        const xPos = tileCoords.xTile * TILE_SIZE;
+        const yPos = tileCoords.yTile * TILE_SIZE;
+        const pathSprite = new PIXI.Graphics().beginFill(0xa74c3c).drawRect(xPos, yPos, TILE_SIZE, TILE_SIZE);
+        this.pathLayer.addChild(pathSprite);
     }
 }

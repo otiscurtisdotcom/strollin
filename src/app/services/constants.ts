@@ -35,7 +35,7 @@ interface Terrain {
 export const TERRAIN_INFO: Terrain[] = [
     // 0: Grass
     {
-        adj_points: 0,
+        adj_points: 1,
         passable: true
     },
     // 1: Water
@@ -90,27 +90,27 @@ export const TERRAIN_INFO: Terrain[] = [
     },
     // 11: Road
     {
-        adj_points: -2,
+        adj_points: -3,
         passable: true
     },
     // 12: Road
     {
-        adj_points: -2,
+        adj_points: -3,
         passable: true
     },
     // 13: Road
     {
-        adj_points: -2,
+        adj_points: -3,
         passable: true
     },
     // 14: Road
     {
-        adj_points: -2,
+        adj_points: -3,
         passable: true
     },
     // 15: Road
     {
-        adj_points: -2,
+        adj_points: -3,
         passable: true
     },
     // 16: Tree 1
