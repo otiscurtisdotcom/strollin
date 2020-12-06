@@ -65,15 +65,15 @@ export class PixiService {
 
         //LOAD ASSETS
         this.loader.add([
-            "../../assets/Tileset.json",
-            "../../assets/Tileset.png",
-            "../../assets/level1.json",
+            "assets/Tileset.json",
+            "assets/Tileset.png",
+            "assets/level1.json",
         ]).load(() => {
             // SETUP BACKGROUND SPRITESHEET
-            let sheet = this.loader.resources['../../assets/Tileset.json'].spritesheet;
+            let sheet = this.loader.resources['assets/Tileset.json'].spritesheet;
 
             // LOAD LEVEL FROM JSON
-            const level = this.loader.resources['../../assets/level1.json'].data;
+            const level = this.loader.resources['assets/level1.json'].data;
             this.createLevel(level).map(tile => {
                 const sprite = new PIXI.Sprite(
                 sheet.textures![`Tileset${tile.terrainId - 1}.png`]
