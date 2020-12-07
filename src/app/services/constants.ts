@@ -30,6 +30,8 @@ export const START_Y = GRID_HEIGHT - 1;
 interface Terrain {
     adj_points: number;
     passable: boolean;
+    wood?: number;
+    wood_chopped?: boolean;
 }
 
 export const TERRAIN_INFO: Terrain[] = [
@@ -118,9 +120,10 @@ export const TERRAIN_INFO: Terrain[] = [
         adj_points: 10,
         passable: false
     },
-    // 17: Tree 2
+    // 17: Deadwood
     {
-        adj_points: 10,
-        passable: false
+        adj_points: 2,
+        passable: false,
+        wood: 2
     },
 ]

@@ -12,5 +12,6 @@ export class InformationComponent {
   ) {}
 
   currentScore = this.scoresService.score;
+  wood = this.scoresService.wood;
   movesLeft = this.scoresService.movesLeft;
 }

@@ -27,6 +27,7 @@ enum TerrainId {
 interface Tile {
     terrainId: number;
     visited: boolean;
+    wood_chopped: boolean;
 }
 
 @Injectable({
@@ -67,13 +68,13 @@ export class PixiService {
         this.loader.add([
             "assets/Tileset.json",
             "assets/Tileset.png",
-            "assets/level1.json",
+            "assets/level2.json",
         ]).load(() => {
             // SETUP BACKGROUND SPRITESHEET
             let sheet = this.loader.resources['assets/Tileset.json'].spritesheet;
 
             // LOAD LEVEL FROM JSON
-            const level = this.loader.resources['assets/level1.json'].data;
+            const level = this.loader.resources['assets/level2.json'].data;
             this.createLevel(level).map(tile => {
                 const sprite = new PIXI.Sprite(
                 sheet.textures![`Tileset${tile.terrainId - 1}.png`]
@@ -161,9 +162,10 @@ export class PixiService {
         }
         
         // POINTS
-        let adjacentPoints = 0;
-        adjacentPoints = isInEndZone ? 0 : this.getAdjacent(newTileCoords);
-        this.scoresService.makeMove(adjacentPoints, isInEndZone);
+        const adjacentScores = this.getAdjacent(newTileCoords);
+        let adjacentPoints = isInEndZone ? 0 : adjacentScores.score;
+        let adjacentWood = isInEndZone ? 0 : adjacentScores.wood;
+        this.scoresService.makeMove(adjacentPoints, adjacentWood, isInEndZone);
     }
 
     resetPositions() {
@@ -174,6 +176,7 @@ export class PixiService {
         this.levelMap?.map(row => {
             row.map(tile => {
                 tile.visited = false;
+                tile.wood_chopped = false;
             });
         });
 
@@ -190,7 +193,8 @@ export class PixiService {
         this.levelMap = array2d.map((row, i) => {
             return row.map((terrainId, j) => ({
                 terrainId,
-                visited: false
+                visited: false,
+                wood_chopped: false
             }));
         });
         
@@ -233,43 +237,49 @@ export class PixiService {
         requestAnimationFrame(this.animate.bind(this));
     }
 
-    private getAdjacent(centreTile: Coords): number {
+    private getAdjacent(centreTile: Coords): ({score: number, wood: number}) {
         let score = 0;
-        let adjacentTileIds = [];
+        let wood = 0;
+        let adjacentTiles: Tile[] = [];
 
         // Clockwise from top
-        adjacentTileIds.push(
+        adjacentTiles.push(
             centreTile.yTile > 0 ? 
-                    this.levelMap[centreTile.yTile - 1][centreTile.xTile].terrainId : undefined,
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile] : undefined,
             
             centreTile.yTile > 0 && centreTile.xTile < GRID_WIDTH ? 
-                    this.levelMap[centreTile.yTile - 1][centreTile.xTile + 1].terrainId : undefined,
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile + 1] : undefined,
 
             centreTile.xTile < GRID_WIDTH ?
-                    this.levelMap[centreTile.yTile][centreTile.xTile + 1].terrainId : undefined,
+                    this.levelMap[centreTile.yTile][centreTile.xTile + 1] : undefined,
 
             centreTile.xTile < GRID_WIDTH ?
-                    this.levelMap[centreTile.yTile + 1][centreTile.xTile + 1].terrainId : undefined,
+                    this.levelMap[centreTile.yTile + 1][centreTile.xTile + 1] : undefined,
 
-            this.levelMap[centreTile.yTile + 1][centreTile.xTile].terrainId,
-
-            centreTile.xTile > 0 ?
-                    this.levelMap[centreTile.yTile + 1][centreTile.xTile - 1].terrainId : undefined,
+            this.levelMap[centreTile.yTile + 1][centreTile.xTile],
 
             centreTile.xTile > 0 ?
-                    this.levelMap[centreTile.yTile][centreTile.xTile - 1].terrainId : undefined,
+                    this.levelMap[centreTile.yTile + 1][centreTile.xTile - 1] : undefined,
+
+            centreTile.xTile > 0 ?
+                    this.levelMap[centreTile.yTile][centreTile.xTile - 1] : undefined,
 
             centreTile.xTile > 0 && centreTile.yTile > 0 ?
-                    this.levelMap[centreTile.yTile - 1][centreTile.xTile - 1].terrainId : undefined,
+                    this.levelMap[centreTile.yTile - 1][centreTile.xTile - 1] : undefined,
         );
 
-        adjacentTileIds.forEach((id: number) => {
-            if (id !== undefined && TERRAIN_INFO[id]) {
-                score += TERRAIN_INFO[id].adj_points;
+        adjacentTiles.forEach((tile: Tile) => {
+            if (tile.terrainId !== undefined && TERRAIN_INFO[tile.terrainId]) {
+                score += TERRAIN_INFO[tile.terrainId].adj_points;
+                
+                if (TERRAIN_INFO[tile.terrainId].wood && !tile.wood_chopped) {
+                    wood += TERRAIN_INFO[tile.terrainId].wood;
+                    tile.wood_chopped = true;
+                }
             }
         })
 
-        return score;
+        return ({score, wood});
     }
 
     private drawPath(tileCoords: Coords) {

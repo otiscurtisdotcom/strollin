@@ -8,8 +8,10 @@ import { STARTING_MOVES } from './constants';
 export class ScoresService {
   //SCORES
   readonly score = new BehaviorSubject(0);
+  readonly wood = new BehaviorSubject(0);
   readonly movesLeft = new BehaviorSubject(STARTING_MOVES);
   private liveScore = 0;
+  private liveWood = 0;
   public liveMovesLeft = STARTING_MOVES;
 
   //PLAYING
@@ -19,9 +21,12 @@ export class ScoresService {
   readonly title = new BehaviorSubject("Welcome");
   readonly copy = new BehaviorSubject("Time for a stroll...");
 
-  makeMove(points: number, endArea: boolean) {
+  makeMove(points: number, wood: number, endArea: boolean) {
     this.liveScore += points;
     this.score.next(this.liveScore);
+
+    this.liveWood += wood;
+    this.wood.next(this.liveWood);
 
     this.liveMovesLeft -= 1;
     this.movesLeft.next(this.liveMovesLeft);
