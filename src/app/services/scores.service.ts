@@ -41,6 +41,14 @@ export class ScoresService {
     }
   }
 
+  makeBench() {
+    this.liveWood -= 2;
+    this.wood.next(this.liveWood);
+
+    this.liveMovesLeft += 12;
+    this.movesLeft.next(this.liveMovesLeft);
+  }
+
   gameOver() {
     this.title.next(`GAME OVER`);
     this.copy.next(`Better luck next time`);
@@ -56,8 +64,10 @@ export class ScoresService {
   restart() {
     this.score.next(0);
     this.movesLeft.next(STARTING_MOVES);
+    this.wood.next(0);
     this.liveScore = 0;
     this.liveMovesLeft = STARTING_MOVES;
+    this.liveWood = 0;
     this.isPlaying.next(true);
   }
 }

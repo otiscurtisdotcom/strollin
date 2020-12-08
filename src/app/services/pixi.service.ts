@@ -54,6 +54,7 @@ export class PixiService {
     private levelMap: Tile[][];
     
     private animating = false;
+    private firstMove = true;
 
     constructor(
         private readonly scoresService: ScoresService,
@@ -101,9 +102,11 @@ export class PixiService {
             !KEYS[event.key] ||
             this.animating ||
             // Only allow up for first move
-            (this.scoresService.liveMovesLeft === STARTING_MOVES && KEYS[event.key] !== KEYS.w) 
+            (this.firstMove && KEYS[event.key] !== KEYS.w) 
         ) return;
 
+        this.firstMove = false;
+        
         let newTileY: number;
         let newTileX: number;
         let withinBounds: boolean;
@@ -141,11 +144,13 @@ export class PixiService {
             break;
         }
 
+        if (!withinBounds) return;
+
         const newTile = this.levelMap[newTileY][newTileX];
         const newTileTerrainId = newTile.terrainId;
         const newTileCoords = { yTile: newTileY, xTile: newTileX };
 
-        if (withinBounds && TERRAIN_INFO[newTileTerrainId].passable && !newTile.visited) {
+        if (TERRAIN_INFO[newTileTerrainId].passable && !newTile.visited) {
             this.spriteTempPosition = newTileCoords;
             this.levelMap[newTileY][newTileX].visited = true;
         } else {
@@ -154,17 +159,21 @@ export class PixiService {
         
         const isInEndZone = newTileY === GRID_HEIGHT - 1;
 
+        let adjacentPoints = 0;
+        let adjacentWood = 0;
+
         // DRAW PATH
         if (!isInEndZone) {
             setTimeout(() => {
                 this.drawPath(newTileCoords);
             }, 200);
+
+            // POINTS
+            const adjacentScores = this.getAdjacent(newTileCoords);
+            adjacentPoints = isInEndZone ? 0 : adjacentScores.score;
+            adjacentWood = isInEndZone ? 0 : adjacentScores.wood;
         }
         
-        // POINTS
-        const adjacentScores = this.getAdjacent(newTileCoords);
-        let adjacentPoints = isInEndZone ? 0 : adjacentScores.score;
-        let adjacentWood = isInEndZone ? 0 : adjacentScores.wood;
         this.scoresService.makeMove(adjacentPoints, adjacentWood, isInEndZone);
     }
 
@@ -182,7 +191,17 @@ export class PixiService {
 
         setTimeout(() => {
             this.pathLayer.removeChildren();
-        }, 250)
+        }, 250);
+
+        this.firstMove = true;
+    }
+
+    makeBench() {
+        const xPos = this.spritePosition.xTile * TILE_SIZE;
+        const yPos = this.spritePosition.yTile * TILE_SIZE;
+        const benchSprite = new PIXI.Graphics().beginFill(0xe2d23c).drawRect(xPos, yPos, TILE_SIZE, TILE_SIZE);
+        this.pathLayer.addChild(benchSprite);
+        this.scoresService.makeBench();
     }
 
     private createLevel = (rawTiles: RawTileMap): ParsedTile[] => {
@@ -269,7 +288,7 @@ export class PixiService {
         );
 
         adjacentTiles.forEach((tile: Tile) => {
-            if (tile.terrainId !== undefined && TERRAIN_INFO[tile.terrainId]) {
+            if (tile !== undefined && TERRAIN_INFO[tile.terrainId]) {
                 score += TERRAIN_INFO[tile.terrainId].adj_points;
                 
                 if (TERRAIN_INFO[tile.terrainId].wood && !tile.wood_chopped) {

@@ -124,6 +124,6 @@ export const TERRAIN_INFO: Terrain[] = [
     {
         adj_points: 2,
         passable: false,
-        wood: 2
+        wood: 1
     },
 ]
