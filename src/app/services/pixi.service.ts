@@ -201,7 +201,10 @@ export class PixiService {
         const yPos = this.spritePosition.yTile * TILE_SIZE;
         const benchSprite = new PIXI.Graphics().beginFill(0xe2d23c).drawRect(xPos, yPos, TILE_SIZE, TILE_SIZE);
         this.pathLayer.addChild(benchSprite);
-        this.scoresService.makeBench();
+
+        //BONUS POINTS
+        const bonusPoints = this.getAdjacent(this.spritePosition).score;
+        this.scoresService.makeBench(bonusPoints);
     }
 
     private createLevel = (rawTiles: RawTileMap): ParsedTile[] => {

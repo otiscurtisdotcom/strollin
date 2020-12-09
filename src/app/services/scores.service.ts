@@ -41,11 +41,14 @@ export class ScoresService {
     }
   }
 
-  makeBench() {
+  makeBench(bonusPoints: number) {
     this.liveWood -= 2;
     this.wood.next(this.liveWood);
 
-    this.liveMovesLeft += 12;
+    this.liveScore += bonusPoints;
+    this.score.next(this.liveScore);
+
+    this.liveMovesLeft = Math.min(STARTING_MOVES, this.liveMovesLeft + 12);
     this.movesLeft.next(this.liveMovesLeft);
   }
 
