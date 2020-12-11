@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Injectable } from '@angular/core';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, STARTING_MOVES, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y, TERRAIN_INFO } from './constants';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y, TERRAIN_INFO } from './constants';
 import { ScoresService } from './scores.service';
 
 interface RawTileMap {
@@ -43,15 +43,18 @@ export class PixiService {
     private readonly characterLayer = new PIXI.Container();
     private readonly pathLayer = new PIXI.Container();
     private readonly backgroundLayer = new PIXI.Container();
+    private readonly benchLayer = new PIXI.Container();
     private readonly renderer = PIXI.autoDetectRenderer();
     private readonly loader = new PIXI.Loader;
 
     //CREATE CONTENT
-    private readonly sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawRect(0, 0, TILE_SIZE, TILE_SIZE);
+    private readonly sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawCircle(TILE_SIZE / 2, TILE_SIZE / 2, (TILE_SIZE - 40) / 2);
     private spritePosition: Coords;
     private spriteTempPosition: Coords;
 
     private levelMap: Tile[][];
+
+    private lastMoveDirections: KEYS[] = [];
     
     private animating = false;
     private firstMove = true;
@@ -67,18 +70,20 @@ export class PixiService {
 
         //LOAD ASSETS
         this.loader.add([
-            "assets/Tileset.json",
-            "assets/Tileset.png",
+            "assets/terrain.json",
+            "assets/terrain.png",
+            "assets/paths.json",
+            "assets/paths.png",
             "assets/level2.json",
         ]).load(() => {
             // SETUP BACKGROUND SPRITESHEET
-            let sheet = this.loader.resources['assets/Tileset.json'].spritesheet;
+            const sheet = this.loader.resources['assets/terrain.json'].spritesheet;
 
             // LOAD LEVEL FROM JSON
             const level = this.loader.resources['assets/level2.json'].data;
             this.createLevel(level).map(tile => {
                 const sprite = new PIXI.Sprite(
-                sheet.textures![`Tileset${tile.terrainId - 1}.png`]
+                    sheet.textures![`terrain${tile.terrainId - 1}.png`]
                 );
                 sprite.x = tile.x;
                 sprite.y = tile.y;
@@ -90,6 +95,7 @@ export class PixiService {
             //ADD LAYERS TO STAGE
             this.app.stage.addChild(this.backgroundLayer);
             this.app.stage.addChild(this.pathLayer);
+            this.app.stage.addChild(this.benchLayer);
             this.app.stage.addChild(this.characterLayer);
 
             //ANIMATE
@@ -153,6 +159,10 @@ export class PixiService {
         if (TERRAIN_INFO[newTileTerrainId].passable && !newTile.visited) {
             this.spriteTempPosition = newTileCoords;
             this.levelMap[newTileY][newTileX].visited = true;
+            this.lastMoveDirections.unshift(KEYS[event.key]);
+            if (this.lastMoveDirections.length === 3) {
+                this.lastMoveDirections.pop();
+            }
         } else {
             return;
         }
@@ -178,7 +188,7 @@ export class PixiService {
     }
 
     resetPositions() {
-        this.spritePosition = { xTile:START_X, yTile:START_Y};
+        this.spritePosition = { xTile:START_X, yTile:START_Y };
         this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
         this.characterLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
         
@@ -188,6 +198,8 @@ export class PixiService {
                 tile.wood_chopped = false;
             });
         });
+        
+        this.benchLayer.removeChildren();
 
         setTimeout(() => {
             this.pathLayer.removeChildren();
@@ -200,7 +212,7 @@ export class PixiService {
         const xPos = this.spritePosition.xTile * TILE_SIZE;
         const yPos = this.spritePosition.yTile * TILE_SIZE;
         const benchSprite = new PIXI.Graphics().beginFill(0xe2d23c).drawRect(xPos, yPos, TILE_SIZE, TILE_SIZE);
-        this.pathLayer.addChild(benchSprite);
+        this.benchLayer.addChild(benchSprite);
 
         //BONUS POINTS
         const bonusPoints = this.getAdjacent(this.spritePosition).score;
@@ -305,9 +317,70 @@ export class PixiService {
     }
 
     private drawPath(tileCoords: Coords) {
-        const xPos = tileCoords.xTile * TILE_SIZE;
-        const yPos = tileCoords.yTile * TILE_SIZE;
-        const pathSprite = new PIXI.Graphics().beginFill(0xa74c3c).drawRect(xPos, yPos, TILE_SIZE, TILE_SIZE);
+        const sheet = this.loader.resources['assets/paths.json'].spritesheet;
+        let currentPath = '0';
+        let previousPath = '0';
+
+        if (this.pathLayer.children.length > 0 && this.lastMoveDirections.length > 1) {
+            const previousTile = this.pathLayer.children[this.pathLayer.children.length - 1];
+            const previousTilePosition = previousTile.position;
+            previousTile.destroy();
+
+            const lastTwoPaths = `${this.lastMoveDirections[1]}_${this.lastMoveDirections[0]}`;
+            
+            switch (lastTwoPaths) {
+                case 'LEFT_LEFT':
+                case 'RIGHT_RIGHT':
+                    previousPath = '0';
+                    break;
+                case 'UP_UP':
+                case 'DOWN_DOWN':
+                    previousPath = '1';
+                    break;
+                case 'RIGHT_UP':
+                case 'DOWN_LEFT':
+                    previousPath = '2';
+                    break;
+                case 'RIGHT_DOWN':
+                case 'UP_LEFT':
+                    previousPath = '3';
+                    break;
+                case 'DOWN_RIGHT':
+                case 'LEFT_UP':
+                    previousPath = '4';
+                    break;
+                case 'UP_RIGHT':
+                case 'LEFT_DOWN':
+                    previousPath = '5';
+                    break;
+                default:
+                    previousPath = '0';
+                    break;
+            };
+            
+            const previousPathSprite = new PIXI.Sprite(sheet.textures![`paths${previousPath}.png`]);
+            previousPathSprite.position.set(previousTilePosition.x, previousTilePosition.y);
+            this.pathLayer.addChild(previousPathSprite);
+        }
+
+        switch (this.lastMoveDirections[0]) {
+            case KEYS.w:
+                currentPath = '8';
+                break;
+            case KEYS.a:
+                currentPath = '11';
+                break;
+            case KEYS.s:
+                currentPath = '10';
+                break;
+            case KEYS.d:
+                currentPath = '9';
+                break;
+        };
+
+        const pathSprite = new PIXI.Sprite(sheet.textures![`paths${currentPath}.png`]);
+        pathSprite.x = tileCoords.xTile * TILE_SIZE;
+        pathSprite.y = tileCoords.yTile * TILE_SIZE;
         this.pathLayer.addChild(pathSprite);
     }
 }
