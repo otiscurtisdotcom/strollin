@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import { STARTING_MOVES } from '../constants/constants';
+import { LEVELS } from '../constants/levels';
+import { PopUpsType } from '../constants/pop-ups';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +18,17 @@ export class ScoresService {
   private liveScore = 0;
   private liveWood = 0;
   public liveMovesLeft = STARTING_MOVES;
+  readonly stars = this.getStars();;
 
   //PLAYING
   readonly isPlaying = new BehaviorSubject(false);
 
-  //MESSAGES
-  readonly title = new BehaviorSubject("Welcome");
-  readonly copy = new BehaviorSubject("Time for a stroll...");
+  //POP UP
+  readonly popUpType = new BehaviorSubject<PopUpsType>(PopUpsType.WELCOME);
+
+  constructor(
+    private readonly userService: UserService,
+  ) {}
 
   makeMove(points: number, wood: number, endArea: boolean) {
     this.liveScore += points;
@@ -53,14 +62,12 @@ export class ScoresService {
   }
 
   gameOver() {
-    this.title.next(`GAME OVER`);
-    this.copy.next(`Better luck next time`);
+    this.popUpType.next(PopUpsType.GAME_OVER);
     this.isPlaying.next(false);
   }
 
   levelComplete() {
-    this.title.next(`LEVEL COMPLETE`);
-    this.copy.next(`Final score: ${this.liveScore}`);
+    this.popUpType.next(PopUpsType.LEVEL_COMPLETE);
     this.isPlaying.next(false);
   }
 
@@ -72,5 +79,16 @@ export class ScoresService {
     this.liveMovesLeft = STARTING_MOVES;
     this.liveWood = 0;
     this.isPlaying.next(true);
+  }
+
+  private getStars(): Observable<number> {
+    return combineLatest(this.userService.currentLevel, this.score).pipe(
+      map(([currentLevel, score]) => {
+        const levelObject = LEVELS.find(level => level.id === currentLevel);
+        return score >= levelObject.three_star ? 3 :
+               score >= levelObject.two_star ? 2 :
+               1;
+      })
+    )
   }
 }

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { map } from 'rxjs/operators';
+import { PopUps, PopUpsType } from '../../constants/pop-ups';
 import { ScoresService } from '../../services/scores.service';
 
 @Component({
@@ -7,8 +9,15 @@ import { ScoresService } from '../../services/scores.service';
   styleUrls: ['./pop-up.component.scss']
 })
 export class PopUpComponent {
-  readonly title = this.scoresService.title;
-  readonly copy = this.scoresService.copy;
+  readonly score = this.scoresService.score;
+  readonly stars = this.scoresService.stars;
+  readonly popUpContent = this.scoresService.popUpType.pipe(
+    map(popupType => {
+      return PopUps.find(popup => popup.type === popupType);
+    })
+  );
+
+  readonly popUpTypes = PopUpsType;
 
   constructor(
     private readonly scoresService: ScoresService

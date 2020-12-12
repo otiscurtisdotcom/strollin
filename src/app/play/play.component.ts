@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ScoresService } from '../services/scores.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'play',
@@ -12,16 +13,21 @@ import { ScoresService } from '../services/scores.service';
 })
 export class PlayComponent implements OnInit {
   readonly isPlaying = this.scoresService.isPlaying;
-  levelId: Observable<string>;
+  levelId: Observable<number>;
 
   constructor(
+    private readonly route: ActivatedRoute,
     private readonly scoresService: ScoresService,
-    private route: ActivatedRoute,
+    private readonly userService: UserService,
   ) {}
 
   ngOnInit() {
     this.levelId = this.route.paramMap.pipe(
-      map((params: ParamMap) => params.get('id'))
+      map((params: ParamMap) => {
+        const levelNumber = parseInt(params.get('id'));
+        this.userService.currentLevel.next(levelNumber);
+        return levelNumber;
+      })
     );
   }
 }

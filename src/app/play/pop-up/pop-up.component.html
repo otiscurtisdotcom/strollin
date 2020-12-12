@@ -1,5 +1,15 @@
-<div>
-    <h1>{{ title | async }}</h1>
-    <p>{{ copy | async }}</p>
-    <button (click)="restart()">Play</button>
+<div *ngIf="popUpContent | async as popup" class="modal">
+    <h1>{{ popup.title }}</h1>
+    <p>{{ popup.copy }}</p>
+    
+    <div
+        class="stars"
+        *ngIf="popup.type === popUpTypes.LEVEL_COMPLETE"
+    >
+        <ng-container *ngIf="(stars | async) as totalStars">
+            <span *ngFor="let star of [1, 2, 3]" [class.shown]="totalStars >= star">[*]</span>
+        </ng-container>
+    </div>
+
+    <button (click)="restart()">{{ popup.buttonText }}</button>
 </div>

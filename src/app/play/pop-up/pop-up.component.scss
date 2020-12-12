@@ -11,10 +11,22 @@
     z-index: 1;
 }
 
-div {
+.modal {
     background-color: tan;
     max-width: 400px;
     text-align: center;
     padding: 60px;
     width: 100%;
+}
+
+.stars {
+    padding: 20px;
+
+    span {
+        opacity: 0.2;
+
+        &.shown {
+            opacity: 1;
+        }
+    }
 }
