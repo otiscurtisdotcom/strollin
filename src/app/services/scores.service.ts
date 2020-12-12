@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { STARTING_MOVES } from './constants';
+import { STARTING_MOVES } from '../constants/constants';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { Injectable } from '@angular/core';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y, TERRAIN_INFO } from './constants';
+
+import { CANVAS_HEIGHT, CANVAS_WIDTH, KEYS, TILE_SIZE, Coords, GRID_HEIGHT, GRID_WIDTH, START_X, START_Y } from '../constants/constants';
+import { TERRAIN_INFO } from '../constants/terrain';
 import { ScoresService } from './scores.service';
 
 interface RawTileMap {
@@ -63,7 +65,7 @@ export class PixiService {
         private readonly scoresService: ScoresService,
     ) {}
 
-    setupGame() {
+    setupGame(levelId: number) {
         //CREATE APP
         this.app.view.style.height = `${CANVAS_HEIGHT / 3}px`;
         this.app.view.style.width = `${CANVAS_WIDTH / 3}px`;
@@ -74,13 +76,13 @@ export class PixiService {
             "assets/terrain.png",
             "assets/paths.json",
             "assets/paths.png",
-            "assets/level2.json",
+            `assets/level${levelId}.json`,
         ]).load(() => {
             // SETUP BACKGROUND SPRITESHEET
             const sheet = this.loader.resources['assets/terrain.json'].spritesheet;
 
             // LOAD LEVEL FROM JSON
-            const level = this.loader.resources['assets/level2.json'].data;
+            const level = this.loader.resources[`assets/level${levelId}.json`].data;
             this.createLevel(level).map(tile => {
                 const sprite = new PIXI.Sprite(
                     sheet.textures![`terrain${tile.terrainId - 1}.png`]

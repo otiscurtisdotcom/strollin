@@ -1,0 +1,7 @@
+<h2>Choose a level</h2>
+
+<ul>
+    <li *ngFor="let level of levels">
+        <a [routerLink]="['/play/' + level.id]">Level {{ level.id }}</a>
+    </li>
+</ul>

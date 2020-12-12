@@ -1,11 +1,15 @@
-<div>
-    <h3>Score: {{ currentScore | async }}</h3>
-    <h3>Moves left: {{ movesLeft | async }}</h3>
-</div>
+<h2>Level {{levelId}}</h2>
 
-<div class="wood">
-    <h3>Wood: {{ wood | async }}</h3>
-    <button [disabled]="(wood | async) < 2" (click)="makeBench()">
-        Make a bench
-    </button>
-</div>
+<section>
+    <div>
+        <h3>Score: {{ currentScore | async }}</h3>
+        <h3>Moves left: {{ movesLeft | async }}</h3>
+    </div>
+
+    <div class="wood">
+        <h3>Wood: {{ wood | async }}</h3>
+        <button [disabled]="(wood | async) < 2" (click)="makeBench()">
+            Make a bench
+        </button>
+    </div>
+</section>

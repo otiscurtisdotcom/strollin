@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PixiService } from 'src/app/services/pixi.service';
 import { ScoresService } from '../../services/scores.service';
 
@@ -8,6 +8,8 @@ import { ScoresService } from '../../services/scores.service';
   styleUrls: ['./information.component.scss']
 })
 export class InformationComponent {
+  @Input() levelId: string;
+
   constructor(
     private readonly scoresService: ScoresService,
     private readonly pixiService: PixiService
