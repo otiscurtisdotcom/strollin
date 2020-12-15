@@ -1,15 +1,24 @@
 <div *ngIf="popUpContent | async as popup" class="modal">
     <h1>{{ popup.title }}</h1>
     <p>{{ popup.copy }}</p>
-    
-    <div
-        class="stars"
-        *ngIf="popup.type === popUpTypes.LEVEL_COMPLETE"
-    >
-        <ng-container *ngIf="(stars | async) as totalStars">
-            <span *ngFor="let star of [1, 2, 3]" [class.shown]="totalStars >= star">[*]</span>
-        </ng-container>
-    </div>
 
-    <button (click)="restart()">{{ popup.buttonText }}</button>
+    <ng-container *ngIf="currentLevel | async as level">
+        <button (click)="restart(level)" *ngIf="popup.type == popUpTypes.GAME_OVER">
+            {{ popup.buttonText }}
+        </button>
+    </ng-container>
+
+    <button (click)="start()" *ngIf="popup.type == popUpTypes.WELCOME">
+        {{ popup.buttonText }}
+    </button>
+    
+    <ng-container *ngIf="popup.type == popUpTypes.LEVEL_COMPLETE">
+        <p>YOU GOT {{ score | async}} POINTS!</p>
+        <div class="stars" *ngIf="(stars | async) as totalStars">
+            <span *ngFor="let star of [1, 2, 3]" [class.shown]="totalStars.levelStars >= star">[*]</span>
+        </div>
+        <button (click)="backToMenu()">
+            {{ popup.buttonText }}
+        </button>
+    </ng-container>
 </div>

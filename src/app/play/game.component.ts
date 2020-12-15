@@ -10,6 +10,8 @@ export class GameComponent implements OnInit, OnChanges {
   @Input() isPlaying = false;
   @Input() levelId!: number;
 
+  readonly app = this.pixiService.app;
+
   constructor(
     private readonly elementRef: ElementRef,
     private readonly pixiService: PixiService,
@@ -17,7 +19,7 @@ export class GameComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.pixiService.setupGame(this.levelId);
-    this.elementRef.nativeElement.appendChild(this.pixiService.app.view);
+    this.elementRef.nativeElement.appendChild(this.app.view);
   }
 
   ngOnChanges() {

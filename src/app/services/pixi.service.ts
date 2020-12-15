@@ -60,10 +60,25 @@ export class PixiService {
     
     private animating = false;
     private firstMove = true;
+    private loaded = false;
 
     constructor(
         private readonly scoresService: ScoresService,
     ) {}
+
+    loadBasics() {
+        if (!this.loaded) {
+            this.loader.add([
+                "assets/terrain.json",
+                "assets/terrain.png",
+                "assets/paths.json",
+                "assets/paths.png"
+            ]).load(() => {
+                console.log('LOADED');
+                this.loaded = true;
+            });
+        }
+    }
 
     setupGame(levelId: number) {
         //CREATE APP
@@ -71,38 +86,40 @@ export class PixiService {
         this.app.view.style.width = `${CANVAS_WIDTH / 3}px`;
 
         //LOAD ASSETS
-        this.loader.add([
-            "assets/terrain.json",
-            "assets/terrain.png",
-            "assets/paths.json",
-            "assets/paths.png",
-            `assets/level${levelId}.json`,
-        ]).load(() => {
-            // SETUP BACKGROUND SPRITESHEET
-            const sheet = this.loader.resources['assets/terrain.json'].spritesheet;
+        if (this.loader.resources[`assets/level${levelId}.json`]) {
+            this.levelLoaded(levelId);
+        } else {
+            this.loader.add([
+                `assets/level${levelId}.json`,
+            ]).load(() => this.levelLoaded(levelId));
+        }
+    }
 
-            // LOAD LEVEL FROM JSON
-            const level = this.loader.resources[`assets/level${levelId}.json`].data;
-            this.createLevel(level).map(tile => {
-                const sprite = new PIXI.Sprite(
-                    sheet.textures![`terrain${tile.terrainId - 1}.png`]
-                );
-                sprite.x = tile.x;
-                sprite.y = tile.y;
-                this.backgroundLayer.addChild(sprite);
-            });
-            //ADD CONTENT TO CONTENT LAYER
-            this.characterLayer.addChild(this.sprite);
+    private levelLoaded(levelId: number) {
+        // SETUP BACKGROUND SPRITESHEET
+        const sheet = this.loader.resources['assets/terrain.json'].spritesheet;
 
-            //ADD LAYERS TO STAGE
-            this.app.stage.addChild(this.backgroundLayer);
-            this.app.stage.addChild(this.pathLayer);
-            this.app.stage.addChild(this.benchLayer);
-            this.app.stage.addChild(this.characterLayer);
-
-            //ANIMATE
-            this.animate();
+        // LOAD LEVEL FROM JSON
+        const level = this.loader.resources[`assets/level${levelId}.json`].data;
+        this.createLevel(level).map(tile => {
+            const sprite = new PIXI.Sprite(
+                sheet.textures![`terrain${tile.terrainId - 1}.png`]
+            );
+            sprite.x = tile.x;
+            sprite.y = tile.y;
+            this.backgroundLayer.addChild(sprite);
         });
+        //ADD CONTENT TO CONTENT LAYER
+        this.characterLayer.addChild(this.sprite);
+
+        //ADD LAYERS TO STAGE
+        this.app.stage.addChild(this.backgroundLayer);
+        this.app.stage.addChild(this.pathLayer);
+        this.app.stage.addChild(this.benchLayer);
+        this.app.stage.addChild(this.characterLayer);
+
+        //ANIMATE
+        this.animate();
     }
 
     keyPressed(event: KeyboardEvent) {
@@ -201,6 +218,7 @@ export class PixiService {
             });
         });
         
+        this.backgroundLayer.removeChildren();
         this.benchLayer.removeChildren();
 
         setTimeout(() => {

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { STARTING_MOVES } from '../constants/constants';
 import { LEVELS } from '../constants/levels';
 import { PopUpsType } from '../constants/pop-ups';
-import { UserService } from './user.service';
+import { Stars, UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +18,22 @@ export class ScoresService {
   private liveScore = 0;
   private liveWood = 0;
   public liveMovesLeft = STARTING_MOVES;
-  readonly stars = this.getStars();;
-
+  
+  private liveStars: Stars[] = [
+    {
+      levelNumber: 1,
+      levelStars: 0
+    },
+    {
+      levelNumber: 2,
+      levelStars: 0
+    },
+    {
+      levelNumber: 3,
+      levelStars: 0
+    },
+  ];
+  
   //PLAYING
   readonly isPlaying = new BehaviorSubject(false);
 
@@ -67,6 +81,7 @@ export class ScoresService {
   }
 
   levelComplete() {
+    this.updateStars();
     this.popUpType.next(PopUpsType.LEVEL_COMPLETE);
     this.isPlaying.next(false);
   }
@@ -80,15 +95,21 @@ export class ScoresService {
     this.liveWood = 0;
     this.isPlaying.next(true);
   }
-
-  private getStars(): Observable<number> {
-    return combineLatest(this.userService.currentLevel, this.score).pipe(
-      map(([currentLevel, score]) => {
+  
+  private updateStars() {
+    this.userService.currentLevel.pipe(
+      map((currentLevel) => {
         const levelObject = LEVELS.find(level => level.id === currentLevel);
-        return score >= levelObject.three_star ? 3 :
-               score >= levelObject.two_star ? 2 :
-               1;
+        const newLevelStars = this.liveScore >= levelObject.three_star ? 3 :
+                              this.liveScore >= levelObject.two_star ? 2 :
+                              1;
+        this.liveStars.forEach(starsLevel => {
+          if (starsLevel.levelNumber === currentLevel) {
+            starsLevel.levelStars = newLevelStars;
+          };
+        });
+        this.userService.updateStars(this.liveStars);
       })
-    )
+    ).subscribe();
   }
 }

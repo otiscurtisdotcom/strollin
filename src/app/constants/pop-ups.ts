@@ -28,6 +28,6 @@ export const PopUps: PopUp[] = [
       type: PopUpsType.LEVEL_COMPLETE,
       title: "Level complete",
       copy: "Well done",
-      buttonText: "Next level?"
+      buttonText: "Back to menu"
     },
 ];
