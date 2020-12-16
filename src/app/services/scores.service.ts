@@ -102,7 +102,8 @@ export class ScoresService {
         const levelObject = LEVELS.find(level => level.id === currentLevel);
         const newLevelStars = this.liveScore >= levelObject.three_star ? 3 :
                               this.liveScore >= levelObject.two_star ? 2 :
-                              1;
+                              this.liveScore > 0 ? 1 :
+                              0;
         this.liveStars.forEach(starsLevel => {
           if (starsLevel.levelNumber === currentLevel) {
             starsLevel.levelStars = newLevelStars;

@@ -13,6 +13,7 @@ import { ScoresService } from '../../services/scores.service';
   styleUrls: ['./pop-up.component.scss']
 })
 export class PopUpComponent {
+  readonly score = this.scoresService.score;
   readonly currentLevel = this.userService.currentLevel;
   readonly stars = 
       combineLatest(this.userService.stars, this.currentLevel).pipe(
@@ -41,11 +42,13 @@ export class PopUpComponent {
   }
   
   restart(level) {
+    this.pixiService.resetPositions();
     this.scoresService.restart();
     this.pixiService.setupGame(level);
   }
 
   backToMenu() {
+    this.pixiService.resetPositions();
     this.scoresService.restart();
     this.router.navigateByUrl('');
   }
