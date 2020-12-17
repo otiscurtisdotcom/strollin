@@ -9,7 +9,7 @@ export const LEVELS: Level[] = [
     {
         id: 1,
         required_stars: 0,
-        two_star: 210,
+        two_star: 240,
         three_star: 262
     },
     {
@@ -21,7 +21,7 @@ export const LEVELS: Level[] = [
     {
         id: 3,
         required_stars: 5,
-        two_star: 200,
-        three_star: 253
+        two_star: 240,
+        three_star: 262
     }
 ]

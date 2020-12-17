@@ -60,14 +60,14 @@ export class PixiService {
     
     private animating = false;
     private firstMove = true;
-    private loaded = false;
+    public isLoaded?: boolean;
 
     constructor(
         private readonly scoresService: ScoresService,
     ) {}
 
     loadBasics() {
-        if (!this.loaded) {
+        if (!this.isLoaded) {
             this.loader.add([
                 "assets/terrain.json",
                 "assets/terrain.png",
@@ -75,7 +75,7 @@ export class PixiService {
                 "assets/paths.png"
             ]).load(() => {
                 console.log('LOADED');
-                this.loaded = true;
+                this.isLoaded = true;
             });
         }
     }

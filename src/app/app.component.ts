@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { TOTAL_STARS } from './constants/constants';
+import { ALL_STARS } from './constants/constants';
 import { UserService } from './services/user.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const totalStarsLoaded = JSON.parse(localStorage.getItem(TOTAL_STARS) || "[]");
+    const totalStarsLoaded = JSON.parse(localStorage.getItem(ALL_STARS) || "[]");
     this.userService.stars.next(totalStarsLoaded);
   }
 }

@@ -1,6 +1,6 @@
 export const STARTING_MOVES = 20;
 
-export const TOTAL_STARS = 'totalStars';
+export const ALL_STARS = 'allStars';
 
 export enum KEYS {
     "w" = "UP",
