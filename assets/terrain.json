@@ -1,6 +1,6 @@
 {
     "frames": {
-        "Tileset0.png": {
+        "terrain0.png": {
             "frame": {
                 "x": 0,
                 "y": 0,
@@ -20,7 +20,7 @@
                 "h": 128
             }
         },
-        "Tileset1.png": {
+        "terrain1.png": {
             "frame": {
                 "x": 128,
                 "y": 0,
@@ -40,7 +40,7 @@
                 "h": 128
             }
         },
-        "Tileset2.png": {
+        "terrain2.png": {
             "frame": {
                 "x": 256,
                 "y": 0,
@@ -60,7 +60,7 @@
                 "h": 128
             }
         },
-        "Tileset3.png": {
+        "terrain3.png": {
             "frame": {
                 "x": 384,
                 "y": 0,
@@ -80,7 +80,7 @@
                 "h": 128
             }
         },
-        "Tileset4.png": {
+        "terrain4.png": {
             "frame": {
                 "x": 0,
                 "y": 128,
@@ -100,7 +100,7 @@
                 "h": 128
             }
         },
-        "Tileset5.png": {
+        "terrain5.png": {
             "frame": {
                 "x": 128,
                 "y": 128,
@@ -120,7 +120,7 @@
                 "h": 128
             }
         },
-        "Tileset6.png": {
+        "terrain6.png": {
             "frame": {
                 "x": 256,
                 "y": 128,
@@ -140,7 +140,7 @@
                 "h": 128
             }
         },
-        "Tileset7.png": {
+        "terrain7.png": {
             "frame": {
                 "x": 384,
                 "y": 128,
@@ -160,7 +160,7 @@
                 "h": 128
             }
         },
-        "Tileset8.png": {
+        "terrain8.png": {
             "frame": {
                 "x": 0,
                 "y": 256,
@@ -180,7 +180,7 @@
                 "h": 128
             }
         },
-        "Tileset9.png": {
+        "terrain9.png": {
             "frame": {
                 "x": 128,
                 "y": 256,
@@ -200,7 +200,7 @@
                 "h": 128
             }
         },
-        "Tileset10.png": {
+        "terrain10.png": {
             "frame": {
                 "x": 256,
                 "y": 256,
@@ -220,7 +220,7 @@
                 "h": 128
             }
         },
-        "Tileset11.png": {
+        "terrain11.png": {
             "frame": {
                 "x": 384,
                 "y": 256,
@@ -240,7 +240,7 @@
                 "h": 128
             }
         },
-        "Tileset12.png": {
+        "terrain12.png": {
             "frame": {
                 "x": 0,
                 "y": 384,
@@ -260,7 +260,7 @@
                 "h": 128
             }
         },
-        "Tileset13.png": {
+        "terrain13.png": {
             "frame": {
                 "x": 128,
                 "y": 384,
@@ -280,7 +280,7 @@
                 "h": 128
             }
         },
-        "Tileset14.png": {
+        "terrain14.png": {
             "frame": {
                 "x": 256,
                 "y": 384,
@@ -300,7 +300,7 @@
                 "h": 128
             }
         },
-        "Tileset15.png": {
+        "terrain15.png": {
             "frame": {
                 "x": 384,
                 "y": 384,
@@ -320,7 +320,7 @@
                 "h": 128
             }
         },
-        "Tileset16.png": {
+        "terrain16.png": {
             "frame": {
                 "x": 0,
                 "y": 512,
@@ -344,7 +344,7 @@
     "meta": {
         "app": "https://github.com/piskelapp/piskel/",
         "version": "1.0",
-        "image": "Tileset.png",
+        "image": "terrain.png",
         "format": "RGBA8888",
         "size": {
             "w": 512,
