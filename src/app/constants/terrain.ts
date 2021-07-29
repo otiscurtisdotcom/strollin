@@ -11,54 +11,54 @@ export const TERRAIN_INFO: Terrain[] = [
         adj_points: 1,
         passable: true
     },
-    // 1: Water
-    {
-        adj_points: 5,
-        passable: false
-    },
-    // 2: Water
-    {
-        adj_points: 5,
-        passable: false
-    },
-    // 3: Water
-    {
-        adj_points: 5,
-        passable: false
-    },
-    // 4: Water
-    {
-        adj_points: 5,
-        passable: false
-    },
-    // 5: Water
-    {
-        adj_points: 5,
-        passable: false
-    },
-    // 6: START / END
+    // 1: START / END
     {
         adj_points: 0,
         passable: true
     },
-    // 7: START / END
+    // 2: START / END
     {
         adj_points: 0,
         passable: true
     },
-    // 8: START / END
+    // 3: START / END
     {
         adj_points: 0,
         passable: true
     },
-    // 9: START / END
+    // 4: Road
     {
-        adj_points: 0,
+        adj_points: -3,
         passable: true
     },
-    // 10: START / END
+    // 5: Road
     {
-        adj_points: 0,
+        adj_points: -3,
+        passable: true
+    },
+    // 6: Road
+    {
+        adj_points: -3,
+        passable: true
+    },
+    // 7: Road
+    {
+        adj_points: -3,
+        passable: true
+    },
+    // 8: Road
+    {
+        adj_points: -3,
+        passable: true
+    },
+    // 9: Road
+    {
+        adj_points: -3,
+        passable: true
+    },
+    // 10: Road
+    {
+        adj_points: -3,
         passable: true
     },
     // 11: Road
@@ -86,12 +86,98 @@ export const TERRAIN_INFO: Terrain[] = [
         adj_points: -3,
         passable: true
     },
-    // 16: Tree 1
+    // 16: Road
+    {
+        adj_points: -3,
+        passable: true
+    },
+    // 17: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 18: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 19: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 20: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 21: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 22: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 23: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 24: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 25: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 26: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 27: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 28: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 29: Water
+    {
+        adj_points: 5,
+        passable: false
+    },
+    // 30: Tree
     {
         adj_points: 10,
         passable: false
     },
-    // 17: Deadwood
+    // 31: Tree
+    {
+        adj_points: 10,
+        passable: false
+    },
+    // 32: Tree
+    {
+        adj_points: 10,
+        passable: false
+    },
+    // 33: Deadwood
+    {
+        adj_points: 2,
+        passable: false,
+        wood: 1
+    },
+    // 34: Deadwood
     {
         adj_points: 2,
         passable: false,

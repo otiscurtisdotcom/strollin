@@ -69,8 +69,8 @@ export class PixiService {
     loadBasics() {
         if (!this.isLoaded) {
             this.loader.add([
-                "assets/terrain.json",
-                "assets/terrain.png",
+                "assets/terrain2.json",
+                "assets/terrain2.png",
                 "assets/paths.json",
                 "assets/paths.png"
             ]).load(() => {
@@ -97,7 +97,7 @@ export class PixiService {
 
     private levelLoaded(levelId: number) {
         // SETUP BACKGROUND SPRITESHEET
-        const sheet = this.loader.resources['assets/terrain.json'].spritesheet;
+        const sheet = this.loader.resources['assets/terrain2.json'].spritesheet;
 
         // LOAD LEVEL FROM JSON
         const level = this.loader.resources[`assets/level${levelId}.json`].data;

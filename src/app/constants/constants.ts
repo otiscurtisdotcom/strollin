@@ -9,7 +9,7 @@ export enum KEYS {
     "d" = "RIGHT",
 };
 
-export const TILE_SIZE = 128;
+export const TILE_SIZE = 126;
 export const GRID_HEIGHT = 10;
 export const GRID_WIDTH = 10;
 
