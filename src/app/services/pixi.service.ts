@@ -46,6 +46,7 @@ export class PixiService {
     private readonly pathLayer = new PIXI.Container();
     private readonly backgroundLayer = new PIXI.Container();
     private readonly benchLayer = new PIXI.Container();
+    private readonly grassLayer = new PIXI.Container();
     private readonly renderer = PIXI.autoDetectRenderer();
     private readonly loader = new PIXI.Loader;
 
@@ -96,6 +97,10 @@ export class PixiService {
     }
 
     private levelLoaded(levelId: number) {
+        // ADD GRASS BACKGROUND
+        const grass = PIXI.Sprite.from('assets/bg.png');
+        this.grassLayer.addChild(grass);
+
         // SETUP BACKGROUND SPRITESHEET
         const sheet = this.loader.resources['assets/terrain2.json'].spritesheet;
 
@@ -113,6 +118,7 @@ export class PixiService {
         this.characterLayer.addChild(this.sprite);
 
         //ADD LAYERS TO STAGE
+        this.app.stage.addChild(this.grassLayer);
         this.app.stage.addChild(this.backgroundLayer);
         this.app.stage.addChild(this.pathLayer);
         this.app.stage.addChild(this.benchLayer);
