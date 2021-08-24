@@ -32,6 +32,8 @@ interface Tile {
     wood_chopped: boolean;
 }
 
+const HALF_TILE = TILE_SIZE / 2;
+
 @Injectable({
     providedIn: 'root'
 })
@@ -46,6 +48,7 @@ export class PixiService {
     private readonly pathLayer = new PIXI.Container();
     private readonly backgroundLayer = new PIXI.Container();
     private readonly chessLayer = new PIXI.Container();
+    private readonly extrasLayer = new PIXI.Container();
     private readonly benchLayer = new PIXI.Container();
     private readonly grassLayer = new PIXI.Container();
     private readonly renderer = PIXI.autoDetectRenderer();
@@ -75,7 +78,9 @@ export class PixiService {
                 "assets/terrain2.png",
                 "assets/paths.json",
                 "assets/paths.png",
-                "assets/chess.png"
+                "assets/chess.png",
+                "assets/extras.json",
+                "assets/extras.png",
             ]).load(() => {
                 console.log('LOADED');
                 this.isLoaded = true;
@@ -84,18 +89,18 @@ export class PixiService {
     }
 
     setupGame(levelId: number) {
-        //CREATE APP
-        this.app.view.style.height = `${CANVAS_HEIGHT / 3}px`;
-        this.app.view.style.width = `${CANVAS_WIDTH / 3}px`;
+      //CREATE APP
+      this.app.view.style.height = `${CANVAS_HEIGHT / 3}px`;
+      this.app.view.style.width = `${CANVAS_WIDTH / 3}px`;
 
-        //LOAD ASSETS
-        if (this.loader.resources[`assets/level${levelId}.json`]) {
-            this.levelLoaded(levelId);
-        } else {
-            this.loader.add([
-                `assets/level${levelId}.json`,
-            ]).load(() => this.levelLoaded(levelId));
-        }
+      //LOAD ASSETS
+      if (this.loader.resources[`assets/level${levelId}.json`]) {
+        this.levelLoaded(levelId);
+      } else {
+        this.loader.add([
+          `assets/level${levelId}.json`,
+        ]).load(() => this.levelLoaded(levelId));
+      }
     }
 
     private levelLoaded(levelId: number) {
@@ -122,10 +127,14 @@ export class PixiService {
         //ADD CONTENT TO CONTENT LAYER
         this.characterLayer.addChild(this.sprite);
 
+        // EXTRAS
+        this.addExtras();
+
         //ADD LAYERS TO STAGE
         this.app.stage.addChild(this.grassLayer);
         this.app.stage.addChild(this.backgroundLayer);
         this.app.stage.addChild(this.chessLayer);
+        this.app.stage.addChild(this.extrasLayer);
         this.app.stage.addChild(this.pathLayer);
         this.app.stage.addChild(this.benchLayer);
         this.app.stage.addChild(this.characterLayer);
@@ -232,6 +241,8 @@ export class PixiService {
         
         this.backgroundLayer.removeChildren();
         this.benchLayer.removeChildren();
+        this.chessLayer.removeChildren();
+        this.extrasLayer.removeChildren();
 
         setTimeout(() => {
             this.pathLayer.removeChildren();
@@ -417,24 +428,68 @@ export class PixiService {
     }
 
     private addChess() {
-        const HALF_TILE = TILE_SIZE / 2;
-        for (let row = 0; row < GRID_HEIGHT; row++) { 
-            for (let col = 0; col < GRID_WIDTH; col++) {
-                const chessTile = PIXI.Sprite.from('assets/chess.png');
-                chessTile.anchor.x = 0.5;
-                chessTile.anchor.y = 0.5;
-                chessTile.position.x = col * TILE_SIZE + HALF_TILE;
-                chessTile.position.y = row * TILE_SIZE + HALF_TILE
-                chessTile.blendMode = PIXI.BLEND_MODES.SUBTRACT;
-                if (row%2 === 0) {
-                    chessTile.angle = col%2 === 0 ? 180 : 0;
-                    chessTile.alpha = col%2 === 0 ? 0.03 : 0.08;
-                } else {
-                    chessTile.angle = col%2 === 0 ? 0 : 180;
-                    chessTile.alpha = col%2 === 0 ? 0.09 : 0.02;
-                }
-                this.chessLayer.addChild(chessTile);
+      for (let row = 0; row < GRID_HEIGHT; row++) { 
+        for (let col = 0; col < GRID_WIDTH; col++) {
+            const chessTile = PIXI.Sprite.from('assets/chess.png');
+            chessTile.anchor.set(0.5);
+            chessTile.position.x = col * TILE_SIZE + HALF_TILE;
+            chessTile.position.y = row * TILE_SIZE + HALF_TILE;
+            chessTile.blendMode = PIXI.BLEND_MODES.SUBTRACT;
+            if (row%2 === 0) {
+                chessTile.angle = col%2 === 0 ? 180 : 0;
+                chessTile.alpha = col%2 === 0 ? 0.03 : 0.08;
+            } else {
+                chessTile.angle = col%2 === 0 ? 0 : 180;
+                chessTile.alpha = col%2 === 0 ? 0.09 : 0.02;
             }
+            this.chessLayer.addChild(chessTile);
         }
+      }
+    }
+
+    private addExtras() {
+      const extras = this.loader.resources['assets/extras.json'].spritesheet;
+      
+      // Car park
+      const carparkThreshold = 0.4;
+      for (let col = 1; col < GRID_WIDTH - 1; col++) {
+        const pngNum = Math.floor(Math.random() * 4);
+        if (Math.random() < carparkThreshold && col !== 2) {
+          const extrasTile = new PIXI.Sprite(extras.textures[`extras${pngNum}.png`]);
+          extrasTile.anchor.set(0.5);
+          extrasTile.position.x = col * TILE_SIZE + HALF_TILE;
+          extrasTile.position.y = (GRID_HEIGHT - 1) * TILE_SIZE + HALF_TILE;
+          extrasTile.scale.x = this.coinToss() ? 1 : -1;
+          this.extrasLayer.addChild(extrasTile);
+        }
+      }
+
+      const grassArray: string[] = []
+
+      //Grass
+      const totalGrass = 10;
+      for (let grassNum = 0; grassNum < totalGrass; grassNum++) {
+        const xPos = Math.floor(Math.random() * GRID_HEIGHT);
+        const yPos = Math.floor(Math.random() * GRID_HEIGHT);
+        const hasGrass = grassArray.some((tile) => tile === `${xPos}${yPos}`);
+
+        if (this.levelMap[yPos][xPos].terrainId === 0 && !hasGrass) {
+          const pngNum = Math.floor(Math.random() * 5 + 4);
+          const grassTile = new PIXI.Sprite(extras.textures[`extras${pngNum}.png`]);
+          grassTile.anchor.set(0.5);
+          grassTile.position.x = xPos * TILE_SIZE + HALF_TILE;
+          grassTile.position.y = yPos * TILE_SIZE + HALF_TILE;
+          grassTile.scale.x = this.coinToss() ? 1 : -1;
+          grassTile.blendMode = PIXI.BLEND_MODES.SUBTRACT;
+          grassTile.alpha = 0.4;
+          this.extrasLayer.addChild(grassTile);
+
+          grassArray.push(`${xPos}${yPos}`);
+        }
+      }
+    }
+
+    private coinToss(): boolean {
+      return(Math.random() < 0.5);
     }
 }

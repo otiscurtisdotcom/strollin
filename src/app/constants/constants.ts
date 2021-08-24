@@ -17,13 +17,13 @@ export const CANVAS_HEIGHT = TILE_SIZE * GRID_HEIGHT;
 export const CANVAS_WIDTH = TILE_SIZE * GRID_WIDTH;
 
 export interface Coords {
-    xTile: number;
-    yTile: number;
+  xTile: number;
+  yTile: number;
 }
 
 export interface Tile {
-    terrainId: number;
-    visited?: boolean;
+  terrainId: number;
+  visited?: boolean;
 }
 
 export const START_X = 2;
