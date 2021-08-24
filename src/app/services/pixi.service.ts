@@ -75,8 +75,7 @@ export class PixiService {
                 "assets/terrain2.png",
                 "assets/paths.json",
                 "assets/paths.png",
-                "assets/chess.png",
-                "assets/chess.json"
+                "assets/chess.png"
             ]).load(() => {
                 console.log('LOADED');
                 this.isLoaded = true;
@@ -418,16 +417,22 @@ export class PixiService {
     }
 
     private addChess() {
-        const chess = this.loader.resources['assets/chess.json'].spritesheet;
-        for (let row = 0; row < GRID_HEIGHT; row++) {
-            
+        const HALF_TILE = TILE_SIZE / 2;
+        for (let row = 0; row < GRID_HEIGHT; row++) { 
             for (let col = 0; col < GRID_WIDTH; col++) {
-                const pngNum = row%2 == 0 ? col%4 : 3 - col%4;
-                const chessTile = new PIXI.Sprite(chess.textures![`chess${pngNum}.png`]);
-                chessTile.position.x = col * TILE_SIZE;
-                chessTile.position.y = row * TILE_SIZE;
+                const chessTile = PIXI.Sprite.from('assets/chess.png');
+                chessTile.anchor.x = 0.5;
+                chessTile.anchor.y = 0.5;
+                chessTile.position.x = col * TILE_SIZE + HALF_TILE;
+                chessTile.position.y = row * TILE_SIZE + HALF_TILE
                 chessTile.blendMode = PIXI.BLEND_MODES.SUBTRACT;
-                chessTile.alpha = 0.08;
+                if (row%2 === 0) {
+                    chessTile.angle = col%2 === 0 ? 180 : 0;
+                    chessTile.alpha = col%2 === 0 ? 0.03 : 0.08;
+                } else {
+                    chessTile.angle = col%2 === 0 ? 0 : 180;
+                    chessTile.alpha = col%2 === 0 ? 0.09 : 0.02;
+                }
                 this.chessLayer.addChild(chessTile);
             }
         }
