@@ -54,8 +54,12 @@ export class PixiService {
     private readonly renderer = PIXI.autoDetectRenderer();
     private readonly loader = new PIXI.Loader;
 
+    private get extras() {
+      return this.loader.resources['assets/extras.json'].spritesheet;
+    }
+
     //CREATE CONTENT
-    private readonly sprite = new PIXI.Graphics().beginFill(0xe74c3c).drawCircle(TILE_SIZE / 2, TILE_SIZE / 2, (TILE_SIZE - 40) / 2);
+    private sprite;
     private spritePosition: Coords;
     private spriteTempPosition: Coords;
 
@@ -84,6 +88,7 @@ export class PixiService {
             ]).load(() => {
                 console.log('LOADED');
                 this.isLoaded = true;
+                this.sprite = new PIXI.Sprite(this.extras.textures[`extras9.png`])
             });
         }
     }
@@ -252,9 +257,11 @@ export class PixiService {
     }
 
     makeBench() {
-        const xPos = this.spritePosition.xTile * TILE_SIZE;
-        const yPos = this.spritePosition.yTile * TILE_SIZE;
-        const benchSprite = new PIXI.Graphics().beginFill(0xe2d23c).drawRect(xPos, yPos, TILE_SIZE, TILE_SIZE);
+        const benchSprite = new PIXI.Sprite(this.extras.textures[`extras8.png`]);
+        benchSprite.anchor.set(0.5);
+        benchSprite.position.x = this.spritePosition.xTile * TILE_SIZE + HALF_TILE;
+        benchSprite.position.y = this.spritePosition.yTile * TILE_SIZE + HALF_TILE;
+
         this.benchLayer.addChild(benchSprite);
 
         //BONUS POINTS
@@ -448,14 +455,12 @@ export class PixiService {
     }
 
     private addExtras() {
-      const extras = this.loader.resources['assets/extras.json'].spritesheet;
-      
       // Car park
       const carparkThreshold = 0.4;
       for (let col = 1; col < GRID_WIDTH - 1; col++) {
         const pngNum = Math.floor(Math.random() * 4);
         if (Math.random() < carparkThreshold && col !== 2) {
-          const extrasTile = new PIXI.Sprite(extras.textures[`extras${pngNum}.png`]);
+          const extrasTile = new PIXI.Sprite(this.extras.textures[`extras${pngNum}.png`]);
           extrasTile.anchor.set(0.5);
           extrasTile.position.x = col * TILE_SIZE + HALF_TILE;
           extrasTile.position.y = (GRID_HEIGHT - 1) * TILE_SIZE + HALF_TILE;
@@ -474,8 +479,8 @@ export class PixiService {
         const hasGrass = grassArray.some((tile) => tile === `${xPos}${yPos}`);
 
         if (this.levelMap[yPos][xPos].terrainId === 0 && !hasGrass) {
-          const pngNum = Math.floor(Math.random() * 5 + 4);
-          const grassTile = new PIXI.Sprite(extras.textures[`extras${pngNum}.png`]);
+          const pngNum = Math.floor(Math.random() * 4 + 4);
+          const grassTile = new PIXI.Sprite(this.extras.textures[`extras${pngNum}.png`]);
           grassTile.anchor.set(0.5);
           grassTile.position.x = xPos * TILE_SIZE + HALF_TILE;
           grassTile.position.y = yPos * TILE_SIZE + HALF_TILE;
