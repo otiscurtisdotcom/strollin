@@ -1,0 +1,11 @@
+:host {
+  border-radius: 2px;
+  box-shadow: 4px 4px 12px rgb(0 0 0 / 50%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+game {
+  display: flex;
+}

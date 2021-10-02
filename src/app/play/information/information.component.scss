@@ -1,14 +1,217 @@
+@import '../../scss/colors';
+
+:host {
+  background-image: url('../../../assets/info/info-background.png');
+  background-size: cover; 
+  background-position: center top;
+  display: flex;
+  min-height: 160px;
+  position: relative;
+}
+
+p {
+  margin: 0;
+}
+
 section {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  > div {
+    flex-shrink: 0;
+    position: relative;
+    width: 50%;
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  > div {
+    align-items: flex-end;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    padding: 10px;
+    width: 100%;
+
+    &.bottom {
+      height: 60px;
+      justify-content: flex-end;
+    }
+
+    &.top {
+      justify-content: right;
+      text-align: right;
+      width: 100%;
+
+      div {
+        display: flex;
+        flex-direction: row;
+      }
+
+      p {
+        color: $pink;
+        font-size: 40px;
+        line-height: 40px;
+    
+        &.level {
+          font-size: 16px;
+          line-height: 16px;
+          text-transform: uppercase;
+        }
+      }
+    
+      svg {
+        fill: $pink;
+        height: 40px;
+        margin-right: 8px;
+        width: 20px;
+      }
+    }
+  }
 }
 
-h2,
-h3 {
-    margin: 2px 0 8px;
+.tabs {
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  position: absolute;
+  top: 30px;
+
+  button {
+    background: $green;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    box-shadow: 3px 3px 3px $shadow;
+    height: 40px;
+    margin-bottom: 4px;
+    width: 40px;
+
+    &:last-child {
+      background-color: $blue;
+    }
+
+    svg {
+      height: 24px;
+      fill: white;
+      width: 24px;
+    }
+  }
 }
 
-.wood {
-    text-align: right;
+.stars {
+  display: flex;
+  height: 30px;
+  justify-content: space-evenly;
+  position: absolute;
+  width: calc(100% - 20px);
+  z-index: 1;
+
+  .star {
+    border-right: 2px solid white;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 6px;
+    position: relative;
+    width: 100%;
+
+    svg {
+      fill: #ffec00;
+      position: absolute;
+      right: -13px;
+      stroke: white;
+      stroke-miterlimit: 10;
+      stroke-width: 3px;
+      top: -6px;
+      width: 24px;
+    }
+  }
+}
+
+.bar {
+  background-color: $brown;
+  border-radius: 3px;
+  display: block;
+  flex-shrink: 0;
+  height: 6px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  .fill {
+    background-color: $green;
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    transition: width 0.1s ease;
+    width: 50%;
+  }
+}
+
+.right {
+  display: flex;
+  justify-content: space-evenly;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+
+    &.wood {
+      div {
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: $purple;
+        font-size: 18px;
+        line-height: 18px;
+      }
+
+      svg {
+        fill: $purple;
+        margin-right: 4px;
+        width: 20px;
+      }
+    }
+
+    button {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 5px 5px 5px $shadow;
+      height: 50px;
+      padding: 0px;
+      position: relative;
+      width: 80px;
+
+      img {
+        margin-right: 12px;
+        width: 50px;
+      }
+
+      span {
+        background-color: $purple;
+        border-radius: 12px;
+        box-shadow: -2px -2px 5px $shadow;
+        color: white;
+        display: flex;
+        font-size: 20px;
+        height: 24px;
+        justify-content: center;
+        line-height: 24px;
+        position: absolute;
+        right: 4px;
+        text-align: center;
+        top: 4px;
+        width: 24px;
+      }
+    }
+  }
 }
