@@ -11,7 +11,7 @@ const routes: Routes = [
   { 
     path: 'play/:id',
     component: PlayComponent,
-    // canActivate: [IsLoadedGuard, HasEnoughStarsGuard],
+    canActivate: [IsLoadedGuard, HasEnoughStarsGuard],
   }
 ];
 

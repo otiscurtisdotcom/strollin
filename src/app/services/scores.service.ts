@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { STARTING_MOVES } from '../constants/constants';
@@ -81,7 +81,7 @@ export class ScoresService {
   }
 
   levelComplete() {
-    this.updateStars();
+    this.updateLiveStars();
     this.popUpType.next(PopUpsType.LEVEL_COMPLETE);
     this.isPlaying.next(false);
   }
@@ -96,13 +96,14 @@ export class ScoresService {
     this.isPlaying.next(true);
   }
   
-  private updateStars() {
+  private updateLiveStars() {
     this.userService.currentLevel.pipe(
       map((currentLevel) => {
         const levelObject = LEVELS.find(level => level.id === currentLevel);
-        const newLevelStars = this.liveScore >= levelObject.three_star ? 3 :
-                              this.liveScore >= levelObject.two_star ? 2 :
-                              this.liveScore > 0 ? 1 :
+        const target = levelObject.three_star;
+        const newLevelStars = this.liveScore >= target ? 3 :
+                              this.liveScore >= target / 3 * 2 ? 2 :
+                              this.liveScore >= target / 3 ? 1 :
                               0;
         this.liveStars.forEach(starsLevel => {
           if (starsLevel.levelNumber === currentLevel) {
