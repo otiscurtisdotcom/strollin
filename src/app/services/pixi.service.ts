@@ -139,8 +139,8 @@ export class PixiService {
         this.app.stage.addChild(this.grassLayer);
         this.app.stage.addChild(this.backgroundLayer);
         this.app.stage.addChild(this.chessLayer);
-        this.app.stage.addChild(this.extrasLayer);
         this.app.stage.addChild(this.pathLayer);
+        this.app.stage.addChild(this.extrasLayer);
         this.app.stage.addChild(this.benchLayer);
         this.app.stage.addChild(this.characterLayer);
 

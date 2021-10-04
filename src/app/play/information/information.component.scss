@@ -137,6 +137,7 @@ section {
 
     &.wood {
       div {
+        align-items: flex-end;
         display: flex;
         margin-bottom: 10px;
       }
@@ -149,8 +150,8 @@ section {
 
       svg {
         fill: $purple;
+        height: 20px;
         margin-right: 4px;
-        width: 20px;
       }
     }
 
