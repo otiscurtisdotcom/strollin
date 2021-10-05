@@ -65,7 +65,7 @@ section {
 .tabs {
   display: flex;
   flex-direction: column;
-  left: 0;
+  left: -2px;
   position: absolute;
   top: 30px;
   z-index: 1;
@@ -77,7 +77,8 @@ section {
     box-shadow: 3px 3px 3px $shadow;
     height: 40px;
     margin-bottom: 4px;
-    width: 40px;
+    padding: 8px 8px 8px 10px;
+    width: 42px;
 
     &:last-child {
       background-color: $blue;

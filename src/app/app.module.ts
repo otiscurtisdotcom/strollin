@@ -4,12 +4,12 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PlayModule } from './play/play.module';
-import { MenuComponent } from './menu/menu.component';
+import { LevelsComponent } from './levels/levels.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuComponent,
+    LevelsComponent,
   ],
   imports: [
     AppRoutingModule,

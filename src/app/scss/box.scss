@@ -1,0 +1,26 @@
+@import 'colors';
+
+.box {
+  align-items: center;
+  background: url('../../assets/info/popup-background.png');
+  background-position: center top;
+  background-size: cover;
+  border-radius: 3px;
+  box-shadow: 10px 10px 20px $shadow;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 400px;
+  text-align: center;
+  padding: 60px;
+  width: 100%;
+
+  h2 {
+    color: $dark-brown;
+  }
+  
+  p {
+    color: $brown;
+    margin-bottom: 24px;
+  }
+}

@@ -1,4 +1,4 @@
-<div *ngIf="popUpContent | async as popup" class="modal">
+<div *ngIf="popUpContent | async as popup" class="box">
     <h2>
       {{ popup.title }}
       <span *ngIf="popup.type == popUpTypes.WELCOME && (currentLevel | async) as level">

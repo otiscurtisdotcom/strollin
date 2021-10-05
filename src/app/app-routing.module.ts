@@ -3,11 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IsLoadedGuard } from './guards/isLoadedGuard';
 import { HasEnoughStarsGuard } from './guards/hasEnoughStarsGuard';
-import { MenuComponent } from './menu/menu.component';
+import { LevelsComponent } from './levels/levels.component';
 import { PlayComponent } from './play/play.component';
 
 const routes: Routes = [
-  { path: '', component: MenuComponent },
+  { path: '', component: LevelsComponent },
   { 
     path: 'play/:id',
     component: PlayComponent,

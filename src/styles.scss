@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+@import './app/scss/box';
+@import './app/scss/buttons';
 @import './app/scss/colors';
 @import './app/scss/stars';
 
@@ -34,54 +36,4 @@ h3 {
 
 h4 {
   font-size: 40px;
-}
-
-button {
-  background: $green;
-  border: 0;
-  border-radius: 6px;
-  box-shadow: 3px 3px 3px $shadow;
-  color: white;
-  cursor: pointer;
-  outline: none;
-  padding: 8px;
-  transition: transform 0.1s ease, filter 0.2s ease;
-
-  &:hover {
-    transform: scale(1.05);
-
-    svg,
-    img {
-      transform: scale(1.1);
-    }
-  }
-
-  &:active {
-    filter: brightness(0.98);
-    transform: scale(1);
-
-    svg,
-    img {
-      transform: scale(0.95);
-    }
-  }
-
-  &[disabled] {
-    cursor: default;
-    filter: saturate(0.5);
-    transform: scale(1);
-
-    svg,
-    img,
-    span {
-      opacity: 0.3;
-      transform: scale(1);
-    }
-  }
-
-  svg,
-  img,
-  span {
-    transition: transform 0.1s ease, opacity 0.2s ease;
-  }
 }

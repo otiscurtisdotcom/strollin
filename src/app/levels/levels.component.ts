@@ -5,11 +5,11 @@ import { PixiService } from '../services/pixi.service';
 import { UserService } from '../services/user.service';
 
 @Component({
-  selector: 'menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  selector: 'levels',
+  templateUrl: './levels.component.html',
+  styleUrls: ['./levels.component.scss']
 })
-export class MenuComponent {
+export class LevelsComponent {
   readonly levels = LEVELS;
   readonly totalStars = this.userService.totalStars;
 

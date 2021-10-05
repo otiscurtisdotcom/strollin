@@ -1,44 +1,15 @@
 @import '../../scss/colors';
+@import '../../scss/mixins';
 
 :host {
-  align-items: center;
+  @include full-screen;
   background: $dark-brown;
-  box-shadow: 10px, 10px, 20px, $shadow;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-}
-
-.modal {
-  background: url('../../../assets/info/popup-background.png');
-  background-position: center top;
-  background-size: cover;
-  border-radius: 3px;
-  max-width: 400px;
-  text-align: center;
-  padding: 60px;
-  width: 100%;
-}
-
-h2 {
-  color: $dark-brown;
-}
-
-p,
-h3 {
-  color: $brown;
-  margin-bottom: 24px;
 }
 
 .stars {
   display: flex;
   justify-content: center;
-  margin: 24px 0;
+  margin-bottom: 24px;
   width: 100%;
 
   .star {

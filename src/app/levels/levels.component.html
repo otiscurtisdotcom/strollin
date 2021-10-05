@@ -1,0 +1,16 @@
+<div class="box">
+  <h2>Choose a level</h2>
+  <p>Total stars: {{ totalStars | async }}</p>
+
+  <ul>
+    <li *ngFor="let level of levels">
+      <a
+        class="button"
+        [routerLink]="['/play/' + level.id]"
+        [attr.disabled]="(totalStars | async) < level.required_stars"
+      >
+        {{ level.id }}
+      </a>
+    </li>
+  </ul>
+</div>
