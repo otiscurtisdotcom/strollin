@@ -91,7 +91,6 @@ export class ScoresService {
   }
 
   end() {
-    console.log('here');
     this.isPlaying.next(false);
   }
 
@@ -105,7 +104,6 @@ export class ScoresService {
   }
 
   showWelcome() {
-    console.log('Show welcome');
     this.popUpType.next(PopUpsType.WELCOME);
   }
   

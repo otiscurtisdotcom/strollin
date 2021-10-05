@@ -20,7 +20,6 @@ export class GameComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    console.log('New level entered');
     this.scoresService.showWelcome();
     this.pixiService.setupGame(this.levelId);
     this.elementRef.nativeElement.appendChild(this.app.view);

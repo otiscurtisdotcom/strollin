@@ -86,7 +86,6 @@ export class PixiService {
                 "assets/extras.json",
                 "assets/extras.png",
             ]).load(() => {
-                console.log('LOADED');
                 this.isLoaded = true;
                 this.sprite = new PIXI.Sprite(this.extras.textures[`extras9.png`])
             });
@@ -149,8 +148,7 @@ export class PixiService {
     }
 
     keyPressed(event: KeyboardEvent) {
-        if (
-            !KEYS[event.key] ||
+        if (!KEYS[event.key] ||
             this.animating ||
             // Only allow up for first move
             (this.firstMove && KEYS[event.key] !== KEYS.w) 
@@ -303,19 +301,19 @@ export class PixiService {
         const xDiff = this.spriteTempPosition.xTile - this.spritePosition.xTile;
 
         if (this.characterLayer.position.y !== this.spriteTempPosition.yTile * TILE_SIZE) {
-            this.characterLayer.position.y += yDiff * TILE_SIZE / 8;
+            this.characterLayer.position.y += yDiff * TILE_SIZE / 12;
             this.animating = true;
         } else {
             this.spritePosition.yTile = this.spriteTempPosition.yTile;
-            this.animating = false;
+            if (this.animating) setTimeout(() => this.animating = false, 200);
         }
         
         if (this.characterLayer.position.x !== this.spriteTempPosition.xTile * TILE_SIZE) {
-            this.characterLayer.position.x += xDiff * TILE_SIZE / 8;
+            this.characterLayer.position.x += xDiff * TILE_SIZE / 12;
             this.animating = true;
         } else {
             this.spritePosition.xTile = this.spriteTempPosition.xTile;
-            this.animating = false;
+            if (this.animating) setTimeout(() => this.animating = false, 200);
         }
 
         requestAnimationFrame(this.animate.bind(this));
