@@ -1,0 +1,30 @@
+.star {
+  display: flex;
+  fill: $shadow;
+  position: relative;
+
+  svg {
+    stroke: white;
+    stroke-miterlimit: 10;
+    stroke-width: 4.5px;
+
+    &.shown {
+      animation: growShrink 0.5s ease-in-out forwards;
+    }
+  }
+}
+
+@keyframes growShrink {
+  0% {
+    fill: $shadow;
+    transform: scale(1);
+  }
+  50% {
+    fill: $star-yellow;
+    transform: scale(1.5);
+  }
+  100% {
+    fill: $star-yellow;
+    transform: scale(1.1);
+  }
+}

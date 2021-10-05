@@ -86,6 +86,15 @@ export class ScoresService {
     this.isPlaying.next(false);
   }
 
+  start() {
+    this.isPlaying.next(true);
+  }
+
+  end() {
+    console.log('here');
+    this.isPlaying.next(false);
+  }
+
   restart() {
     this.score.next(0);
     this.movesLeft.next(STARTING_MOVES);
@@ -93,7 +102,11 @@ export class ScoresService {
     this.liveScore = 0;
     this.liveMovesLeft = STARTING_MOVES;
     this.liveWood = 0;
-    this.isPlaying.next(true);
+  }
+
+  showWelcome() {
+    console.log('Show welcome');
+    this.popUpType.next(PopUpsType.WELCOME);
   }
   
   private updateLiveStars() {

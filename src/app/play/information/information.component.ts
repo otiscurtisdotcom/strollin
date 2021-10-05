@@ -59,6 +59,7 @@ export class InformationComponent implements OnInit {
   exit() {
     this.pixiService.resetPositions();
     this.scoresService.restart();
+    this.scoresService.end();
     this.router.navigateByUrl('');
   }
 }

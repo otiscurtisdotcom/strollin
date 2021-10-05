@@ -24,6 +24,7 @@ export class PopUpComponent {
   
   readonly popUpContent = this.scoresService.popUpType.pipe(
     map(popupType => {
+      console.log('POP up type changed');
       return PopUps.find(popup => popup.type === popupType);
     })
   );
@@ -38,7 +39,7 @@ export class PopUpComponent {
   ) {}
 
   start() {
-    this.scoresService.restart();
+    this.scoresService.start();
   }
   
   restart(level) {
@@ -50,6 +51,7 @@ export class PopUpComponent {
   backToMenu() {
     this.pixiService.resetPositions();
     this.scoresService.restart();
+    this.scoresService.end();
     this.router.navigateByUrl('');
   }
 }

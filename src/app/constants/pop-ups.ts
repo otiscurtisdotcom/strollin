@@ -14,13 +14,13 @@ export interface PopUp {
 export const PopUps: PopUp[] = [
     {
       type: PopUpsType.WELCOME,
-      title: "Welcome!!!",
-      copy: "Let's go for a stroll",
+      title: "Level ",
+      copy: "Time for a stroll",
       buttonText: "Play"
     },
     {
       type: PopUpsType.GAME_OVER,
-      title: "Game Over :(",
+      title: "Game Over",
       copy: "Try another time...",
       buttonText: "Start again"
     },
