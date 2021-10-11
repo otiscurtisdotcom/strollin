@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 import { STARTING_MOVES } from '../constants/constants';
 import { LEVELS } from '../constants/levels';
@@ -18,21 +18,6 @@ export class ScoresService {
   private liveScore = 0;
   private liveWood = 0;
   public liveMovesLeft = STARTING_MOVES;
-  
-  private liveStars: Stars[] = [
-    {
-      levelNumber: 1,
-      levelStars: 0
-    },
-    {
-      levelNumber: 2,
-      levelStars: 0
-    },
-    {
-      levelNumber: 3,
-      levelStars: 0
-    },
-  ];
   
   //PLAYING
   readonly isPlaying = new BehaviorSubject(false);
@@ -108,21 +93,6 @@ export class ScoresService {
   }
   
   private updateLiveStars() {
-    this.userService.currentLevel.pipe(
-      map((currentLevel) => {
-        const levelObject = LEVELS.find(level => level.id === currentLevel);
-        const target = levelObject.three_star;
-        const newLevelStars = this.liveScore >= target ? 3 :
-                              this.liveScore >= target / 3 * 2 ? 2 :
-                              this.liveScore >= target / 3 ? 1 :
-                              0;
-        this.liveStars.forEach(starsLevel => {
-          if (starsLevel.levelNumber === currentLevel) {
-            starsLevel.levelStars = newLevelStars;
-          };
-        });
-        this.userService.updateStars(this.liveStars);
-      })
-    ).subscribe();
+    this.userService.updateStars(this.liveScore);
   }
 }

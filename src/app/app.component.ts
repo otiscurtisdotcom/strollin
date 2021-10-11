@@ -9,14 +9,15 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Strollin';
-
   constructor(
     private readonly userService: UserService,
   ) {}
 
   ngOnInit() {
-    const totalStarsLoaded = JSON.parse(localStorage.getItem(ALL_STARS) || "[]");
-    this.userService.stars.next(totalStarsLoaded);
+    const starsLoaded = localStorage.getItem(ALL_STARS);
+    if (starsLoaded) {
+      const totalStarsLoaded = JSON.parse(starsLoaded);
+      this.userService.stars.next(totalStarsLoaded);
+    }
   }
 }
