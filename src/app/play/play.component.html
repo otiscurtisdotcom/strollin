@@ -1,3 +1,5 @@
-<game [isPlaying]="isPlaying | async" [levelId]="levelId | async"></game>
-<information [levelId]="levelId | async"></information>
+<div class="game-window">
+  <game [isPlaying]="isPlaying | async" [levelId]="levelId | async"></game>
+  <information [levelId]="levelId | async"></information>
+</div>
 <pop-up *ngIf="!(isPlaying | async)"></pop-up>

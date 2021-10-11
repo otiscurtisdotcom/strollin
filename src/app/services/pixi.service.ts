@@ -94,8 +94,8 @@ export class PixiService {
 
     setupGame(levelId: number) {
       //CREATE APP
-      this.app.view.style.height = `${CANVAS_HEIGHT / 3}px`;
-      this.app.view.style.width = `${CANVAS_WIDTH / 3}px`;
+      this.app.view.style.height = `100%`;
+      this.app.view.style.width = `100%`;
 
       //LOAD ASSETS
       if (this.loader.resources[`assets/level${levelId}.json`]) {
@@ -142,6 +142,8 @@ export class PixiService {
         this.app.stage.addChild(this.extrasLayer);
         this.app.stage.addChild(this.benchLayer);
         this.app.stage.addChild(this.characterLayer);
+
+        this.setStartPositions();
 
         //ANIMATE
         this.animate();
@@ -231,9 +233,7 @@ export class PixiService {
     }
 
     resetPositions() {
-        this.spritePosition = { xTile:START_X, yTile:START_Y };
-        this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
-        this.characterLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
+        this.setStartPositions();
         
         this.levelMap?.map(row => {
             row.map(tile => {
@@ -265,6 +265,12 @@ export class PixiService {
         //BONUS POINTS
         const bonusPoints = this.getAdjacent(this.spritePosition).score;
         this.scoresService.makeBench(bonusPoints);
+    }
+
+    private setStartPositions() {
+      this.spritePosition = { xTile:START_X, yTile:START_Y };
+      this.spriteTempPosition = { xTile:START_X, yTile:START_Y };
+      this.characterLayer.position.set(START_X * TILE_SIZE, START_Y * TILE_SIZE);
     }
 
     private createLevel = (rawTiles: RawTileMap): ParsedTile[] => {

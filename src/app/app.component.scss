@@ -1,12 +1,20 @@
 :host {
   align-items: center;
   display: flex;
-  flex-direction: column;
-}
-
-main {
-  display: flex;
   min-height: 100vh;
   flex-direction: column;
   justify-content: center;
+}
+
+header,
+main {
+  margin-bottom: 0.5vh;
+  max-width: 700px;
+  width: 56vh;
+
+  img {
+    display: block;
+    height: 16vh;
+    width: 100%;
+  }
 }
